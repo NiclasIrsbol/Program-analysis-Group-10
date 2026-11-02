@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jpamb"
+version = "0.8.0"
+dependencies = [
+  "PyYAML==6.0.*",
+  "click==8.1.*",
+  "runit==0.1.*",
+]
+authors = [
+  { name = "Christian Gram Kalhauge", email = "chrg@dtu.dk" }
+]
+description = "Utilities for working with the jpamb benchmark suite"
+requires-python = ">=3.13"
+license = "BSD-3-Clause"
+classifiers = [
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+]
+
+[project.scripts]
+jpamb = "cli:cli"
+jpamb-analysis-dummy = "analysis_dummy:main"
+jpamb-interpreter-dummy = "interpreter_dummy:main"
+
+[dependency-groups]
+dev = [
+    "hypothesis>=6.165.5",
+    "pytest>=8.3.4",
+    "ruff>=0.16.5",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "slow: mark test as slow"
+]
+
+[tool.ruff.lint]
+ignore = ["F841", "F403"]
+
+[tool.uv.sources]
+runit = { git = "https://github.com/kalhauge/runit.git" }
+
+
