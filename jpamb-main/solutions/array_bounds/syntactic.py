@@ -109,6 +109,9 @@ def main():
 
     captures = tree_sitter.QueryCursor(if_q).captures(body)
     if_statements = captures.get("if", [])
+    
+    required_facts = {"nonnull", "lower", "upper"}
+    access_results = []
 
     for access in array_accesses:
         array = access.child_by_field_name("array")
@@ -116,55 +119,62 @@ def main():
 
         if array is None or index is None:
             continue
+      
 
         array_name = array.text.decode()
         index_name = index.text.decode()
-        length_name = f"{array_name}.length"
+
+        guarded = False
 
         for statement in if_statements:
+
             condition = statement.child_by_field_name("condition")
-            if condition is None:
+            consequence = statement.child_by_field_name("consequence")
+
+            if condition is None or consequence is None:
                 continue
 
-            for expr in walk(condition):
-                if expr.type != "binary_expression":
-                    continue
+            current = access
 
-                left = expr.child_by_field_name("left")
-                right = expr.child_by_field_name("right")
+            while current is not None and current != consequence:
+                current = current.parent
 
-                if left is None or right is None:
-                    continue
+            if current is None:
+                continue
 
-                op = next(
-                    (c.type for c in expr.children
-                    if c.type in ("<", "<=", ">", ">=")),
-                    None
-                )
+            facts = get_guard_facts( condition, array_name, index_name )
 
-                if op is None:
-                    continue
+            if facts is None:
+                continue
 
-                lhs = "".join(left.text.decode().split())
-                rhs = "".join(right.text.decode().split())
+            if not required_facts.issubset(facts):
+                continue
 
-                if lhs == index_name and rhs == "0":
-                    if op == ">=":
-                        log.debug("Lower bound check: %s", expr.text.decode())
-                    elif op == "<":
-                        log.debug("Negative index check: %s", expr.text.decode())
+            changed = has_changes_before_access( consequence, access, array_name,  index_name
+ )
 
-                elif lhs == index_name and rhs == length_name:
-                    if op == "<":
-                        log.debug("Upper bound check: %s", expr.text.decode())
-                    elif op == ">=":
-                        log.debug("Out-of-bounds check: %s", expr.text.decode())
+            if changed:
+                continue
 
-        
+            guarded = True
+            break
 
+        access_results.append("guarded" if guarded else "unknown")
+
+    if not array_accesses:
+        result = "noarray"
+
+    elif all(r == "guarded" for r in access_results):
+        result = "guarded"
+
+    else:
+        result = "unknown"
 
     for q in jpamb.QUERIES:
-        print(f"{q};skip")    
+        if q == "out of bounds":
+            print(f"{q};{result}")
+        else:
+            print(f"{q};skip") 
 
     sys.exit(0)
 
@@ -177,3 +187,87 @@ def walk(node):
     yield node
     for child in node.named_children:
         yield from walk(child)
+
+
+def has_changes_before_access( branch, access, array_name, index_name ):
+    for node in walk(branch):
+
+        if node.start_byte >= access.start_byte:
+            continue
+
+        target = None
+
+        if node.type == "assignment_expression":
+            target = node.child_by_field_name("left")
+
+        elif node.type == "update_expression":
+            if node.named_children:
+                target = node.named_children[0]
+
+        if target is None:
+            continue
+
+        name = target.text.decode()
+
+        if name == index_name or name == array_name:
+            return True
+
+    return False
+
+
+def get_guard_facts(node, array_name, index_name):
+    if node.type == "parenthesized_expression":
+        children = node.named_children
+
+        if len(children) != 1:
+            return None
+
+        return get_guard_facts(
+            children[0], array_name, index_name
+        )
+
+    if node.type != "binary_expression":
+        return None
+
+    left = node.child_by_field_name("left")
+    right = node.child_by_field_name("right")
+
+    if left is None or right is None:
+        return None
+
+    op = next(
+        (c.type for c in node.children
+         if c.type in ("&&", "||", "!=", ">=", "<")),
+        None
+    )
+
+    if op == "&&":
+        left_facts = get_guard_facts(
+            left, array_name, index_name
+        )
+
+        right_facts = get_guard_facts(
+            right, array_name, index_name
+        )
+
+        if left_facts is None or right_facts is None:
+            return None
+
+        return left_facts | right_facts
+
+    if op is None or op == "||":
+        return None
+
+    lhs = "".join(left.text.decode().split())
+    rhs = "".join(right.text.decode().split())
+
+    if lhs == array_name and rhs == "null" and op == "!=":
+        return {"nonnull"}
+
+    if lhs == index_name and rhs == "0" and op == ">=":
+        return {"lower"}
+
+    if lhs == index_name and rhs == f"{array_name}.length" and op == "<":
+        return {"upper"}
+
+    return None
