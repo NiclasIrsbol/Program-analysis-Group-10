@@ -6,7 +6,6 @@ build-backend = "setuptools.build_meta"
 name = "static"
 version = "0.1.0"
 description = "The start of an abstract interpreter"
-readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
   "hypothesis>=6.168.2",
@@ -17,6 +16,7 @@ dependencies = [
 [project.scripts]
 static-interpreter = "static:interpret"
 static-analysis = "static:analyse"
+array-bounds-coverage = "array_bounds.evaluate:main"
 
 [tool.uv.sources]
 jpamb = { path = "../../", editable = true }
@@ -26,3 +26,10 @@ dev = [
     "pytest>=9.1.1",
 ]
 
+[tool.setuptools]
+py-modules = ["static", "abstractions"]
+packages = ["array_bounds"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+array_bounds = "../array_bounds"

@@ -27,7 +27,9 @@ class DifferenceBounds:
         self.is_bottom = False
 
     def copy(self):
-        result = DifferenceBounds(self.variables[1:])
+        result = object.__new__(DifferenceBounds)
+        result.variables = self.variables[:]
+        result.index = self.index.copy()
         result.dbm = [row[:] for row in self.dbm]
         result.is_bottom = self.is_bottom
         return result
@@ -56,32 +58,46 @@ class DifferenceBounds:
 
     def assume(self, x, y, bound):
         """Add the branch constraint x - y <= bound."""
-        if type(bound) is not int:
-            raise TypeError("A difference constraint needs an integer bound")
-        i, j = self.index[x], self.index[y]
+        return self.assume_many([(x, y, bound)])
+
+    def assume_many(self, constraints):
+        """Insert (x, y, bound) constraints and close the matrix once."""
         result = self.copy()
-        result.dbm[i][j] = min(result.dbm[i][j], bound)
+        for x, y, bound in constraints:
+            if type(bound) is not int:
+                raise TypeError("A difference constraint needs an integer bound")
+            i, j = self.index[x], self.index[y]
+            result.dbm[i][j] = min(result.dbm[i][j], bound)
         return result.close()
 
     def assume_interval(self, variable, lower=None, upper=None):
         if variable == "0":
             raise ValueError("Cannot change the distinguished zero symbol")
         self.index[variable]
-        result = self.copy()
+        return self.assume_many(self._interval_constraints(variable, lower, upper))
+
+    def _interval_constraints(self, variable, lower, upper):
+        for endpoint in (lower, upper):
+            if endpoint is not None and type(endpoint) is not int:
+                raise TypeError("An interval endpoint must be an integer or None")
+        constraints = []
         if lower is not None:
-            result = result.assume("0", variable, -lower)
+            constraints.append(("0", variable, -lower))
         if upper is not None:
-            result = result.assume(variable, "0", upper)
-        return result
+            constraints.append((variable, "0", upper))
+        return constraints
+
+    def _closed_interval(self, variable):
+        if self.is_bottom:
+            return (1, 0)
+        i = self.index[variable]
+        lower, upper = self.dbm[0][i], self.dbm[i][0]
+        return (None if lower == inf else -lower, None if upper == inf else upper)
 
     def interval(self, variable):
         """Return (lower, upper), using None for infinity and (1, 0) for bottom."""
-        i = self.index[variable]
-        state = self.close()
-        if state.is_bottom:
-            return (1, 0)
-        lower, upper = state.dbm[0][i], state.dbm[i][0]
-        return (None if lower == inf else -lower, None if upper == inf else upper)
+        self.index[variable]
+        return self.close()._closed_interval(variable)
 
     def forget(self, variable):
         if variable == "0":
@@ -109,7 +125,7 @@ class DifferenceBounds:
         old = old.assume_interval(source, INT_MIN, INT_MAX)
         if old.is_bottom:
             return old
-        lower, upper = old.interval(source)
+        lower, upper = old._closed_interval(source)
         if lower == upper:
             value = (lower + offset - INT_MIN) % (2**32) + INT_MIN
             return old.forget(target).assume_interval(target, value, value)
@@ -117,10 +133,8 @@ class DifferenceBounds:
             return old.forget(target).assume_interval(target, INT_MIN, INT_MAX)
 
         if k != source_index:
-            return (
-                old.forget(target)
-                .assume(target, source, offset)
-                .assume(source, target, -offset)
+            return old.forget(target).assume_many(
+                [(target, source, offset), (source, target, -offset)]
             )
         # For i := i+c, shift the OLD row and column instead of forgetting i.
         result = old.copy()
@@ -176,11 +190,16 @@ class DifferenceBounds:
 
     def reduce_with_intervals(self, intervals):
         """Import {name: (lower, upper)}; return (new DBM, tighter intervals)."""
-        result = self.copy()
+        constraints = []
         for variable, (lower, upper) in intervals.items():
-            result = result.assume_interval(variable, lower, upper)
-        result = result.close()
-        return result, {name: result.interval(name) for name in self.variables[1:]}
+            if variable == "0":
+                raise ValueError("Cannot change the distinguished zero symbol")
+            self.index[variable]
+            constraints.extend(self._interval_constraints(variable, lower, upper))
+        result = self.assume_many(constraints)
+        return result, {
+            name: result._closed_interval(name) for name in self.variables[1:]
+        }
 
     def is_safe(self, index, length):
         """Numerical bounds only; the shared engine checks nullness separately."""

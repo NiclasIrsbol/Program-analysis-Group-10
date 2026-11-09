@@ -1,6 +1,10 @@
 import itertools
 import unittest
 from math import inf
+from unittest.mock import patch
+
+from hypothesis import given
+from hypothesis import strategies as st
 
 from solutions.array_bounds.difference_bounds import INT_MAX, INT_MIN, DifferenceBounds
 
@@ -15,6 +19,59 @@ def contains(state, values):
 
 
 class DifferenceBoundsTests(unittest.TestCase):
+    def test_copy_skips_constructor_and_owns_its_containers(self):
+        state = DifferenceBounds(["x", "y"])
+        with patch.object(DifferenceBounds, "__init__", side_effect=AssertionError):
+            copied = state.copy()
+        copied.variables.append("z")
+        copied.index["z"] = 3
+        copied.dbm[1][2] = 7
+        self.assertEqual(state.variables, ["0", "x", "y"])
+        self.assertNotIn("z", state.index)
+        self.assertEqual(state.dbm[1][2], inf)
+
+    def test_batched_constraints_and_validation(self):
+        state = DifferenceBounds(["x", "y"])
+        constraints = [("x", "y", -1), ("y", "0", 8), ("0", "x", 0)]
+        expected = state
+        for constraint in constraints:
+            expected = expected.assume(*constraint)
+        self.assertEqual(state.assume_many(constraints).dbm, expected.dbm)
+        self.assertTrue(state.assume_many([("x", "x", -1)]).is_bottom)
+        for bound in (True, 1.5, inf):
+            with self.assertRaises(TypeError):
+                state.assume_many([("x", "y", bound)])
+            with self.assertRaises(TypeError):
+                state.reduce_with_intervals({"x": (bound, None)})
+        for operation in (
+            state.assume_interval,
+            lambda name: state.reduce_with_intervals({name: (None, None)}),
+        ):
+            with self.assertRaises(KeyError):
+                operation("missing")
+            with self.assertRaises(ValueError):
+                operation("0")
+
+    def test_reduction_closes_once_and_matches_sequential_constraints(self):
+        state = DifferenceBounds(["x", "y", "z"]).assume("x", "y", -1)
+        intervals = {"x": (0, 5), "y": (2, 8), "z": (None, 10)}
+        expected = state
+        for variable, bounds in intervals.items():
+            expected = expected.assume_interval(variable, *bounds)
+        close = DifferenceBounds.close
+        with patch.object(
+            DifferenceBounds, "close", autospec=True, side_effect=close
+        ) as calls:
+            reduced, projections = state.reduce_with_intervals(intervals)
+        self.assertEqual(calls.call_count, 1)
+        self.assertEqual(reduced.dbm, expected.dbm)
+        self.assertEqual(
+            projections, {name: expected.interval(name) for name in state.variables[1:]}
+        )
+        bottom, projections = state.reduce_with_intervals({"x": (9, 10), "y": (0, 2)})
+        self.assertTrue(bottom.is_bottom)
+        self.assertEqual(projections, dict.fromkeys(["x", "y", "z"], (1, 0)))
+
     def test_initial_matrix(self):
         state = DifferenceBounds(["i", "length"])
         self.assertEqual(state.dbm, [[0, inf, inf], [inf, 0, inf], [inf, inf, 0]])
@@ -175,6 +232,71 @@ class DifferenceBoundsTests(unittest.TestCase):
         for operation in (top.join, top.widen, top.is_subset_of):
             with self.assertRaises(ValueError):
                 operation(DifferenceBounds(["y"]))
+
+
+@st.composite
+def witnessed_state(draw):
+    variables = ["x", "y", "z"]
+    integer = st.one_of(st.integers(-20, 20), st.sampled_from([INT_MIN, INT_MAX]))
+    values = draw(st.fixed_dictionaries({name: integer for name in variables}))
+    concrete = {"0": 0, **values}
+    pairs = draw(
+        st.lists(
+            st.tuples(
+                st.sampled_from(["0"] + variables),
+                st.sampled_from(["0"] + variables),
+                st.integers(0, 5),
+            ),
+            max_size=12,
+        )
+    )
+    constraints = [(x, y, concrete[x] - concrete[y] + slack) for x, y, slack in pairs]
+    return DifferenceBounds(variables).assume_many(constraints), values
+
+
+class DifferenceBoundsPropertyTests(unittest.TestCase):
+    @given(witnessed_state())
+    def test_closure_preserves_witness(self, example):
+        state, values = example
+        self.assertTrue(contains(state.close(), values))
+
+    @given(
+        witnessed_state(),
+        st.sampled_from(["x", "y", "z"]),
+        st.sampled_from(["0", "x", "y", "z"]),
+        st.integers(-5, 5),
+    )
+    def test_assignment_preserves_concrete_successor(
+        self, example, target, source, offset
+    ):
+        state, values = example
+        successor = values.copy()
+        value = (0 if source == "0" else values[source]) + offset
+        successor[target] = (value - INT_MIN) % (2**32) + INT_MIN
+        self.assertTrue(contains(state.assign(target, source, offset), successor))
+        self.assertTrue(contains(state, values))
+
+    @given(witnessed_state(), witnessed_state())
+    def test_join_and_widen_preserve_both_witnesses(self, left_example, right_example):
+        left, left_values = left_example
+        right, right_values = right_example
+        for result in (left.join(right), left.widen(right)):
+            self.assertTrue(contains(result, left_values))
+            self.assertTrue(contains(result, right_values))
+
+    @given(st.lists(witnessed_state(), min_size=1, max_size=12))
+    def test_raw_widening_stabilizes_on_increasing_sequence(self, examples):
+        increasing = examples[0][0]
+        widened = increasing.copy()
+        size = len(widened.dbm)
+        for state, _ in examples[1:]:
+            increasing = increasing.join(state)
+            previous = widened
+            widened = widened.widen(increasing)
+            for i, j in itertools.product(range(size), repeat=2):
+                self.assertIn(widened.dbm[i][j], (previous.dbm[i][j], inf))
+        # Repeating the last input must be a fixed point, without reclosing the result.
+        self.assertEqual(widened.widen(increasing).dbm, widened.dbm)
 
 
 if __name__ == "__main__":
