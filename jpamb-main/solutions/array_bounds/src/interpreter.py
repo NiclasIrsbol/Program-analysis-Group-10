@@ -6,6 +6,7 @@ from dataclasses import dataclass, replace
 
 from interval import INT_MAX, Interval
 from difference_bounds import DifferenceBounds
+from guard_facts import GuardFacts
 
 import jpamb
 import sexpr
@@ -40,7 +41,7 @@ class Value:
 class State(sexpr.AsSExpr):
     locals: list[Value]
     stack: list[Value]
-    bounds: DifferenceBounds | None = None
+    bounds: DifferenceBounds | GuardFacts | None = None
     exchange: bool = True
 
     def __sexpr__(self):
@@ -157,17 +158,20 @@ class State(sexpr.AsSExpr):
         )
 
     def same_as(self, other):
-        return (
-            self.locals == other.locals
-            and self.stack == other.stack
-            and (
-                self.bounds is None
-                or (
-                    self.bounds.dbm == other.bounds.dbm
-                    and self.bounds.is_bottom == other.bounds.is_bottom
-                )
+        if type(self.bounds) is not type(other.bounds):
+            return False
+        if self.bounds is None:
+            equal_bounds = True
+        elif isinstance(self.bounds, GuardFacts):
+            equal_bounds = self.bounds == other.bounds
+        else:
+            equal_bounds = (
+                self.bounds.dbm == other.bounds.dbm
+                and self.bounds.is_bottom == other.bounds.is_bottom
             )
-        )
+        return (self.locals == other.locals
+                and self.stack == other.stack
+                and equal_bounds)
 
 
 NEGATE = {
@@ -370,7 +374,13 @@ def manystep(bc, pc, state):
         yield pc + 1, state
 
 
-def initialstate(bc, methodid, inputs, relational=True, exchange=True):
+def initialstate(bc, methodid, inputs, relational=True, exchange=True, domain=None):
+    # Preserve old calls that use relational=True/False.
+    if domain is None:
+        domain = "dbm" if relational else "interval"
+    if domain not in ("interval", "guard-facts", "dbm"):
+        raise ValueError(f"Unknown domain: {domain}")
+
     method = bc.getmethod(methodid)
     raw = bc.suite.findmethod(methodid, eff=bc.eff)
     if "static" not in raw["access"] or raw["code"]["exceptions"]:
@@ -381,10 +391,17 @@ def initialstate(bc, methodid, inputs, relational=True, exchange=True):
     variables = [f"l{i}" for i in range(method.max_locals)] + [
         f"s{i}" for i in range(max_stack)
     ]
+    if domain == "interval":
+        bounds = None
+    elif domain == "guard-facts":
+        bounds = GuardFacts(variables)
+    else:
+        bounds = DifferenceBounds(variables)
+
     state = State(
         [Value(Interval.top(), "unknown") for _ in range(method.max_locals)],
         [],
-        DifferenceBounds(variables) if relational else None,
+        bounds,
         exchange,
     )
     for i, parameter in enumerate(methodid.extension.params):
@@ -428,8 +445,8 @@ class AbstractInterpreter:
     steps: int = 0
 
     @staticmethod
-    def initial(bc, methodid, inputs=None, relational=True, exchange=True):
-        states = initialstate(bc, methodid, inputs, relational, exchange)
+    def initial(bc, methodid, inputs=None, relational=True, exchange=True, domain=None):
+        states = initialstate(bc, methodid, inputs, relational, exchange, domain=domain)
         heads = {
             PC(methodid, op.target)
             for position, op in enumerate(bc.getmethod(methodid).opcodes)
@@ -509,22 +526,24 @@ def error_reason(error):
 
 
 def configuration():
-    relational = os.environ.get("JPAMB_DOMAIN", "dbm") != "interval"
+    domain = os.environ.get("JPAMB_DOMAIN", "dbm")
+    if domain not in ("interval", "guard-facts", "dbm"):
+        raise ValueError(f"Unknown JPAMB_DOMAIN: {domain}")
     exchange = os.environ.get("JPAMB_EXCHANGE", "on") != "off"
     tags = ["static", "interval"]
-    if relational:
-        tags += ["dbm", "exchange-on" if exchange else "exchange-off"]
-    return relational, exchange, tags
+    if domain != "interval":
+        tags += [domain, "exchange-on" if exchange else "exchange-off"]
+    return domain, exchange, tags
 
 
 def interpret():
-    relational, exchange, tags = configuration()
+    domain, exchange, tags = configuration()
     methodid, inputs, steps = jpamb.getcase(
         "static", "2.0", "Group 10", tags, for_science=True
     )
     suite, eff = jpamb.setup()
     bc = jpamb.Bytecode(suite, eff, {})
-    ai = AbstractInterpreter.initial(bc, methodid, inputs, relational, exchange)
+    ai = AbstractInterpreter.initial(bc, methodid, inputs, exchange=exchange, domain=domain)
     previous = jpamb.emit_init(ai.states)
     while steps > 0 and ai.worklist:
         pc, finals = ai.step()
@@ -536,14 +555,14 @@ def interpret():
 
 def analyse():
     try:
-        relational, exchange, tags = configuration()
+        domain, exchange, tags = configuration()
         methodid = jpamb.getmethodid(
             "static", "2.0", "Group 10", tags, for_science=True
         )
         suite, eff = jpamb.setup()
         bc = jpamb.Bytecode(suite, eff, {})
         ai = AbstractInterpreter.initial(
-            bc, methodid, relational=relational, exchange=exchange
+            bc, methodid, exchange=exchange, domain=domain
         ).run()
         finals, accesses = ai.results()
         if ai.reason:
