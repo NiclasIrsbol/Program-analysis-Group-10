@@ -118,6 +118,11 @@ def main():
         index = access.child_by_field_name("index")
 
         if array is None or index is None:
+            access_results.append("unknown")
+            continue
+
+        if array.type != "identifier" or index.type != "identifier":
+            access_results.append("unknown")
             continue
       
 
