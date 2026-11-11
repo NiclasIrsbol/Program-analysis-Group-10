@@ -1,0 +1,29 @@
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "array-bounds"
+version = "0.1.0"
+description = "Static array bounds analysis"
+requires-python = ">=3.13"
+dependencies = [
+    "jpamb",
+]
+
+[project.scripts]
+array-bounds-interpreter = "interpreter:interpret"
+array-bounds-analysis = "interpreter:analyse"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = [
+    "abstractions",
+    "interval",
+    "difference_bounds",
+    "interpreter",
+]
+
+[tool.uv.sources]
+jpamb = { path = "../../", editable = true }

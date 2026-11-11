@@ -1,0 +1,41 @@
+method,index,label,note
+jpamb.cases.Arrays.arrayOutOfBounds:()V,5,safe,initialiser array[0] on length 2
+jpamb.cases.Arrays.arrayOutOfBounds:()V,9,safe,initialiser array[1] on length 2
+jpamb.cases.Arrays.arrayOutOfBounds:()V,14,faulty,array[3] on length 2
+jpamb.cases.Arrays.arrayInBounds:()V,5,safe,initialiser
+jpamb.cases.Arrays.arrayInBounds:()V,9,safe,initialiser
+jpamb.cases.Arrays.arrayInBounds:()V,14,safe,array[1] on length 2
+jpamb.cases.Arrays.arrayLength:()V,5,safe,initialiser
+jpamb.cases.Arrays.arrayLength:()V,9,safe,initialiser
+jpamb.cases.Arrays.arrayIsNull:()V,5,null,array is always null (null-pointer outcome; no bounds check reached)
+jpamb.cases.Arrays.arraySometimesNull:(I)V,10,safe,initialiser {i}[0]
+jpamb.cases.Arrays.arraySometimesNull:(I)V,15,faulty,array[1] on length 1 when i < 10 (case (0) -> out of bounds)
+jpamb.cases.Arrays.arrayContent:()V,5,safe,initialiser
+jpamb.cases.Arrays.arrayContent:()V,9,safe,initialiser
+jpamb.cases.Arrays.arrayContent:()V,13,safe,initialiser
+jpamb.cases.Arrays.arrayContent:()V,17,safe,initialiser
+jpamb.cases.Arrays.arrayContent:()V,21,safe,initialiser
+jpamb.cases.Arrays.arrayContent:()V,33,safe,loop i < array.length
+jpamb.cases.Arrays.arrayContentAboveMinus13:()V,5,safe,initialiser
+jpamb.cases.Arrays.arrayContentAboveMinus13:()V,9,safe,initialiser
+jpamb.cases.Arrays.arrayContentAboveMinus13:()V,13,safe,initialiser
+jpamb.cases.Arrays.arrayContentAboveMinus13:()V,17,safe,initialiser
+jpamb.cases.Arrays.arrayContentAboveMinus13:()V,21,safe,initialiser
+jpamb.cases.Arrays.arrayContentAboveMinus13:()V,33,safe,loop i < array.length
+jpamb.cases.Arrays.binarySearch:(I)V,5,safe,initialiser
+jpamb.cases.Arrays.binarySearch:(I)V,9,safe,initialiser
+jpamb.cases.Arrays.binarySearch:(I)V,13,safe,initialiser
+jpamb.cases.Arrays.binarySearch:(I)V,17,safe,initialiser
+jpamb.cases.Arrays.binarySearch:(I)V,21,safe,initialiser
+jpamb.cases.Arrays.binarySearch:(I)V,43,safe,arr[m] with l <= m <= r inside [0 4]; needs reasoning about (r-l)/2
+jpamb.cases.Arrays.binarySearch:(I)V,49,safe,second arr[m]
+jpamb.cases.Arrays.arraySpellsHello:([C)V,4,faulty,array[0] fails on empty input (case ([C: ]) -> out of bounds)
+jpamb.cases.Arrays.arraySpellsHello:([C)V,9,faulty,array[1] fails on input "h"
+jpamb.cases.Arrays.arraySpellsHello:([C)V,14,faulty,array[2] fails on input "he"
+jpamb.cases.Arrays.arraySpellsHello:([C)V,19,faulty,array[3] fails on input "hel"
+jpamb.cases.Arrays.arraySpellsHello:([C)V,24,faulty,array[4] fails on input "hell"
+jpamb.cases.Arrays.arraySumIsLarge:([I)V,11,safe,loop i < array.length
+jpamb.cases.Calls.generatePrimeArray:(I)[I,14,faulty,primeArray[0] fails when length == 0
+jpamb.cases.Calls.generatePrimeArray:(I)[I,36,safe,for-each over primeArray
+jpamb.cases.Calls.generatePrimeArray:(I)[I,61,safe,primeArray[count] guarded by count < length == primeArray.length
+jpamb.cases.Calls.allPrimesArePositive:(I)V,13,safe,for-each over the returned array
