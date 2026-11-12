@@ -262,4 +262,70 @@ public class ArrayBoundsProject {
 
     return array[i];
   }
+
+  // Pair 9: Complementary indices derived from array length
+
+  @Case("(1, 3) -> ok")
+  @Case("(4, 0) -> ok")
+  @Tag({ARRAY})
+  public static int safeComplementaryIndices(int x, int y) {
+    int[] array = {10, 20, 30, 40, 50};
+
+    if (x >= 0 && y >= 0 && x + y == array.length - 1) {
+      return array[x] + array[y];
+    }
+
+    return 0;
+  }
+
+  @Case("(1, 4) -> out of bounds")
+  @Case("(5, 0) -> out of bounds")
+  @Tag({ARRAY})
+  public static int unsafeComplementaryIndices(int x, int y) {
+    int[] array = {10, 20, 30, 40, 50};
+
+    if (x >= 0 && y >= 0 && x + y == array.length) {
+      return array[x] + array[y];
+    }
+
+    return 0;
+  }
+
+  // Pair 10: Safe progress invariant vs unsafe progress invariant
+
+  @Case("() -> ok")
+  @Tag({ARRAY, LOOP})
+  public static int safeProgressInvariant() {
+    int[] array = {10, 20, 30, 40, 50};
+
+    int remaining = array.length;
+    int completed = 0;
+    int sum = 0;
+
+    while (remaining > 0) {
+      sum += array[completed];
+      remaining--;
+      completed++;
+    }
+
+    return sum;
+  }
+
+  @Case("() -> out of bounds")
+  @Tag({ARRAY, LOOP})
+  public static int unsafeProgressInvariant() {
+    int[] array = {10, 20, 30, 40, 50};
+
+    int remaining = array.length;
+    int completed = 0;
+    int sum = 0;
+
+    while (remaining >= 0) {
+      sum += array[completed];
+      remaining--;
+      completed++;
+    }
+
+    return sum;
+  }
 }
