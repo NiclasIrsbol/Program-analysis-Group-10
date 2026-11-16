@@ -131,8 +131,9 @@ def main():
 
         guarded = False
 
-        for statement in if_statements:
+        facts = set()
 
+        for statement in if_statements:
             condition = statement.child_by_field_name("condition")
             consequence = statement.child_by_field_name("consequence")
 
@@ -147,22 +148,22 @@ def main():
             if current is None:
                 continue
 
-            facts = get_guard_facts( condition, array_name, index_name )
+            current_facts = get_guard_facts(
+                condition, array_name, index_name
+            )
 
-            if facts is None:
+            if current_facts is None:
                 continue
 
-            if not required_facts.issubset(facts):
+            if has_changes_before_access( consequence, access, array_name, index_name ):
                 continue
 
-            changed = has_changes_before_access( consequence, access, array_name,  index_name
- )
+            facts |= current_facts
 
-            if changed:
-                continue
+        guarded = required_facts.issubset(facts)
 
-            guarded = True
-            break
+        if not guarded:
+            guarded = protected_by_early_return( access, body, array_name, index_name)
 
         access_results.append("guarded" if guarded else "unknown")
 
@@ -182,10 +183,6 @@ def main():
             print(f"{q};skip") 
 
     sys.exit(0)
-
-
-
-
 
 
 def walk(node):
@@ -241,8 +238,10 @@ def get_guard_facts(node, array_name, index_name):
         return None
 
     op = next(
-        (c.type for c in node.children
-         if c.type in ("&&", "||", "!=", ">=", "<")),
+        (
+            c.type for c in node.children
+            if c.type in ("&&", "||", "!=", ">=", "<", "<=", ">")
+        ),
         None
     )
 
@@ -266,13 +265,147 @@ def get_guard_facts(node, array_name, index_name):
     lhs = "".join(left.text.decode().split())
     rhs = "".join(right.text.decode().split())
 
-    if lhs == array_name and rhs == "null" and op == "!=":
+    if op == "!=" and (
+        (lhs == array_name and rhs == "null")
+        or (lhs == "null" and rhs == array_name)
+    ):
         return {"nonnull"}
 
-    if lhs == index_name and rhs == "0" and op == ">=":
+    if (
+        (lhs == index_name and rhs == "0" and op == ">=")
+        or (lhs == "0" and rhs == index_name and op == "<=")
+    ):
         return {"lower"}
 
-    if lhs == index_name and rhs == f"{array_name}.length" and op == "<":
+    if (
+        (lhs == index_name and rhs == f"{array_name}.length" and op == "<")
+        or (lhs == f"{array_name}.length" and rhs == index_name and op == ">")
+    ):
         return {"upper"}
 
     return None
+
+def get_invalid_facts(node, array_name, index_name):
+    if node.type == "parenthesized_expression":
+        children = node.named_children
+
+        if len(children) != 1:
+            return None
+
+        return get_invalid_facts(
+            children[0], array_name, index_name
+        )
+
+    if node.type != "binary_expression":
+        return None
+
+    left = node.child_by_field_name("left")
+    right = node.child_by_field_name("right")
+
+    if left is None or right is None:
+        return None
+
+    op = next(
+        (
+            c.type for c in node.children
+            if c.type in ("||", "==", "<", ">=", ">", "<=")
+        ),
+        None
+    )
+
+    if op == "||":
+        left_facts = get_invalid_facts(
+            left, array_name, index_name
+        )
+        right_facts = get_invalid_facts(
+            right, array_name, index_name
+        )
+
+        if left_facts is None or right_facts is None:
+            return None
+
+        return left_facts | right_facts
+
+    lhs = "".join(left.text.decode().split())
+    rhs = "".join(right.text.decode().split())
+
+    if op == "==" and (
+        (lhs == array_name and rhs == "null")
+        or (lhs == "null" and rhs == array_name)
+    ):
+        return {"null"}
+
+    if (
+        (lhs == index_name and rhs == "0" and op == "<")
+        or (lhs == "0" and rhs == index_name and op == ">")
+    ):
+        return {"negative"}
+
+    if (
+        (lhs == index_name and rhs == f"{array_name}.length" and op == ">=")
+        or (lhs == f"{array_name}.length" and rhs == index_name and op == "<=")
+    ):
+        return {"too_large"}
+
+    return None
+
+
+def protected_by_early_return(access, body, array_name, index_name):
+    current = access
+
+    while current.parent is not None and current.parent != body:
+        current = current.parent
+
+    if current.parent != body:
+        return False
+
+    if current.type != "return_statement":
+        return False
+
+    if len(current.named_children) != 1:
+        return False
+
+    if current.named_children[0] != access:
+        return False
+
+    statements = body.named_children
+    position = statements.index(current)
+
+    if position == 0:
+        return False
+
+    previous = statements[position - 1]
+
+    if previous.type != "if_statement":
+        return False
+
+    if previous.child_by_field_name("alternative") is not None:
+        return False
+
+    condition = previous.child_by_field_name("condition")
+    consequence = previous.child_by_field_name("consequence")
+
+    if condition is None or consequence is None:
+        return False
+
+    if consequence.type == "block":
+        children = consequence.named_children
+
+        if len(children) != 1:
+            return False
+
+        if children[0].type != "return_statement":
+            return False
+
+    elif consequence.type != "return_statement":
+        return False
+
+    facts = get_invalid_facts(condition, array_name, index_name)
+
+    required = {"null", "negative", "too_large"}
+
+    return facts is not None and required.issubset(facts)
+
+
+if __name__ == "__main__":
+    main()

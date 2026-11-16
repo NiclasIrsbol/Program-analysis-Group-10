@@ -1,3 +1,36 @@
+jpamb.cases.ArrayBoundsProject.guardedAccess:(I)I            (1) -> ok
+jpamb.cases.ArrayBoundsProject.inclusiveUpperBound:(I)I      (2) -> ok
+jpamb.cases.ArrayBoundsProject.inclusiveUpperBound:(I)I      (3) -> out of bounds
+jpamb.cases.ArrayBoundsProject.missingLowerBound:(I)I        (-1) -> out of bounds
+jpamb.cases.ArrayBoundsProject.missingLowerBound:(I)I        (0) -> ok
+jpamb.cases.ArrayBoundsProject.missingUpperBound:(I)I        (1) -> ok
+jpamb.cases.ArrayBoundsProject.missingUpperBound:(I)I        (3) -> out of bounds
+jpamb.cases.ArrayBoundsProject.recheckAfterArrayAssignment:()I () -> ok
+jpamb.cases.ArrayBoundsProject.recheckArrayLengthRelation:(I)I (1) -> ok
+jpamb.cases.ArrayBoundsProject.recheckArrayLengthRelation:(I)I (2) -> ok
+jpamb.cases.ArrayBoundsProject.safeAliasGuard:(I)I           (1) -> ok
+jpamb.cases.ArrayBoundsProject.safeAliasGuard:(I)I           (3) -> ok
+jpamb.cases.ArrayBoundsProject.safeComplementaryIndices:(II)I (1, 3) -> ok
+jpamb.cases.ArrayBoundsProject.safeComplementaryIndices:(II)I (4, 0) -> ok
+jpamb.cases.ArrayBoundsProject.safeDerivedIndex:(I)I         (1) -> ok
+jpamb.cases.ArrayBoundsProject.safeDerivedIndex:(I)I         (2) -> ok
+jpamb.cases.ArrayBoundsProject.safeJoin:([II)I               ([I:10, 20, 30], 0) -> ok
+jpamb.cases.ArrayBoundsProject.safeJoin:([II)I               ([I:10, 20, 30], 1) -> ok
+jpamb.cases.ArrayBoundsProject.safeLengthCopy:()I            () -> ok
+jpamb.cases.ArrayBoundsProject.safeProgressInvariant:()I     () -> ok
+jpamb.cases.ArrayBoundsProject.staleArrayLengthRelation:(I)I (1) -> ok
+jpamb.cases.ArrayBoundsProject.staleArrayLengthRelation:(I)I (2) -> out of bounds
+jpamb.cases.ArrayBoundsProject.staleIndexAfterArrayAssignment:()I () -> out of bounds
+jpamb.cases.ArrayBoundsProject.staleLengthCopy:()I           () -> out of bounds
+jpamb.cases.ArrayBoundsProject.strictLowerBound:(I)I         (0) -> ok
+jpamb.cases.ArrayBoundsProject.strictUpperBound:(I)I         (2) -> ok
+jpamb.cases.ArrayBoundsProject.unsafeComplementaryIndices:(II)I (1, 4) -> ok
+jpamb.cases.ArrayBoundsProject.unsafeComplementaryIndices:(II)I (5, 0) -> out of bounds
+jpamb.cases.ArrayBoundsProject.unsafeDerivedIndex:(I)I       (1) -> ok
+jpamb.cases.ArrayBoundsProject.unsafeDerivedIndex:(I)I       (3) -> out of bounds
+jpamb.cases.ArrayBoundsProject.unsafeJoin:([II)I             ([I:10, 20, 30], 0) -> ok
+jpamb.cases.ArrayBoundsProject.unsafeJoin:([II)I             ([I:10, 20, 30], 1) -> out of bounds
+jpamb.cases.ArrayBoundsProject.unsafeProgressInvariant:()I   () -> out of bounds
 jpamb.cases.Arrays.arrayContent:()V                          () -> assertion error
 jpamb.cases.Arrays.arrayContentAboveMinus13:()V              () -> ok
 jpamb.cases.Arrays.arrayInBounds:()V                         () -> ok

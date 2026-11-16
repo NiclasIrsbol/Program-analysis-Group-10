@@ -278,7 +278,7 @@ public class ArrayBoundsProject {
     return 0;
   }
 
-  @Case("(1, 4) -> out of bounds")
+  @Case("(1, 4) -> ok")
   @Case("(5, 0) -> out of bounds")
   @Tag({ARRAY})
   public static int unsafeComplementaryIndices(int x, int y) {
@@ -309,6 +309,21 @@ public class ArrayBoundsProject {
     }
 
     return sum;
+  }
+  // Pair 11: Alias relation between two indices
+
+  @Case("(1) -> ok")
+  @Case("(3) -> ok")
+  @Tag({ARRAY})
+  public static int safeAliasGuard(int i) {
+      int[] array = {10, 20, 30, 40};
+      int j = i;
+
+      if (j >= 0 && j < array.length) {
+          return array[i];
+      }
+
+      return 0;
   }
 
   @Case("() -> out of bounds")
