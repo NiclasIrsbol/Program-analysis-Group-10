@@ -1,0 +1,3 @@
+config,accesses,safe_labelled,false_warnings,false_warning_rate,faulty_labelled,detected,detection_rate,unknown_or_unresolved,runtime_median_s
+syntactic,40,31,8,0.258,8,7,0.875,16,0.255621
+dbm,40,31,1,0.032,8,8,1.000,0,0.437457

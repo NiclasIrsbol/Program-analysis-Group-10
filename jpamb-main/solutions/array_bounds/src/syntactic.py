@@ -2,7 +2,6 @@
 
 import logging
 import sys
-from pathlib import Path
 
 import tree_sitter
 import tree_sitter_java
@@ -10,27 +9,13 @@ import tree_sitter_java
 import jpamb
 
 
-def main():
-    methodid = jpamb.getmethodid(
-        "syntaxer",
-        "1.0",
-        "The Rice Theorem Cookers",
-        ["syntactic", "python"],
-        for_science=True,
-    )
-
+def analyse_source(source, methodid):
+    """Return one syntactic verdict for each array access in ``methodid``."""
+    log = logging.getLogger(__name__)
     JAVA_LANGUAGE = tree_sitter.Language(tree_sitter_java.language())
     parser = tree_sitter.Parser(JAVA_LANGUAGE)
 
-    log = logging
-    log.basicConfig(level=logging.DEBUG)
-
-    suite, _ = jpamb.setup()
-
-    srcfile = suite.sourcefile(methodid.classname).relative_to(Path.cwd())
-
-    with open(srcfile, "rb") as f:
-        log.debug("parse sourcefile %s", srcfile)
+    with open(source, "rb") as f:
         tree = parser.parse(f.read())
 
     simple_classname = str(methodid.classname.name)
@@ -51,9 +36,7 @@ def main():
     for node in tree_sitter.QueryCursor(class_q).captures(tree.root_node)["class"]:
         break
     else:
-        log.error(f"could not find a class of name {simple_classname} in {srcfile}")
-
-        sys.exit(-1)
+        raise ValueError(f"could not find class {simple_classname} in {source}")
 
     # log.debug("Found class %s", node.range)
 
@@ -90,10 +73,9 @@ def main():
         else:
             break
     else:
-        log.warning(
-            f"could not find a method of name {method_name} in {simple_classname}"
+        raise ValueError(
+            f"could not find method {method_name} in {simple_classname}"
         )
-        sys.exit(-1)
 
 
     body = snode.child_by_field_name("body")
@@ -167,14 +149,27 @@ def main():
 
         access_results.append("guarded" if guarded else "unknown")
 
-    if not array_accesses:
-        result = "noarray"
+    return access_results
 
-    elif all(r == "guarded" for r in access_results):
-        result = "guarded"
 
-    else:
-        result = "unknown"
+def main():
+    methodid = jpamb.getmethodid(
+        "syntaxer",
+        "1.0",
+        "The Rice Theorem Cookers",
+        ["syntactic", "python"],
+        for_science=True,
+    )
+
+    log = logging
+    log.basicConfig(level=logging.DEBUG)
+
+    suite, _ = jpamb.setup()
+    srcfile = suite.sourcefile(methodid.classname)
+    access_results = analyse_source(srcfile, methodid)
+    result = "noarray" if not access_results else (
+        "guarded" if all(r == "guarded" for r in access_results) else "unknown"
+    )
 
     for q in jpamb.QUERIES:
         if q == "out of bounds":

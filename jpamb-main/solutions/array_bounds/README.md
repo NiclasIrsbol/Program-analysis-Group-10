@@ -23,12 +23,19 @@ python -m solutions.array_bounds.analyse "jpamb.cases.Arrays.arraySumIsLarge:([I
 python -m solutions.array_bounds.analyse "jpamb.cases.Arrays.arraySumIsLarge:([I)V" --domain dbm
 python -m solutions.array_bounds.analyse <methodid> --domain dbm --no-exchange --json
 python -m solutions.array_bounds.evaluate --runs 10          # -> solutions/array_bounds/results/
+python -m solutions.array_bounds.syntactic_evaluate --runs 10 # -> comparison-results/
 python -m unittest solutions.array_bounds.tests.test_engine solutions.array_bounds.tests.test_intervals solutions.array_bounds.tests.test_difference_bounds
 ```
 
 Each array access gets `SAFE`, `WARNING` (optionally *definite*) or
 `UNRESOLVED`; null-pointer results are recorded separately (`null: safe /
 possible / definite`).
+
+`syntactic_evaluate` compares the source-level guard detector with DBM on the
+labelled accesses. It writes `syntactic_dbm_accesses.csv` and
+`syntactic_dbm_summary.csv`. A syntactic `unknown` is counted as a warning for
+the comparison, while array-initialiser stores are counted as safe because
+they are not represented as source-level array-access expressions.
 
 ## How the engine works
 
