@@ -218,6 +218,17 @@ def has_changes_before_access( branch, access, array_name, index_name ):
 
 
 def get_guard_facts(node, array_name, index_name):
+    
+    side_effects = {
+        "assignment_expression",
+        "update_expression",
+        "method_invocation",
+        "object_creation_expression",
+    }
+
+    if any(n.type in side_effects for n in walk(node)):
+        return None
+
     if node.type == "parenthesized_expression":
         children = node.named_children
 
@@ -229,7 +240,7 @@ def get_guard_facts(node, array_name, index_name):
         )
 
     if node.type != "binary_expression":
-        return None
+        return set()
 
     left = node.child_by_field_name("left")
     right = node.child_by_field_name("right")
@@ -249,7 +260,6 @@ def get_guard_facts(node, array_name, index_name):
         left_facts = get_guard_facts(
             left, array_name, index_name
         )
-
         right_facts = get_guard_facts(
             right, array_name, index_name
         )
@@ -260,7 +270,7 @@ def get_guard_facts(node, array_name, index_name):
         return left_facts | right_facts
 
     if op is None or op == "||":
-        return None
+        return set()
 
     lhs = "".join(left.text.decode().split())
     rhs = "".join(right.text.decode().split())
@@ -281,9 +291,10 @@ def get_guard_facts(node, array_name, index_name):
         (lhs == index_name and rhs == f"{array_name}.length" and op == "<")
         or (lhs == f"{array_name}.length" and rhs == index_name and op == ">")
     ):
-        return {"upper"}
+        return {"upper", "nonnull"}
 
-    return None
+    return set()
+
 
 def get_invalid_facts(node, array_name, index_name):
     if node.type == "parenthesized_expression":
@@ -348,7 +359,6 @@ def get_invalid_facts(node, array_name, index_name):
         return {"too_large"}
 
     return None
-
 
 def protected_by_early_return(access, body, array_name, index_name):
     current = access
