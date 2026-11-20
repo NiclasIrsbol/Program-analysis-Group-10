@@ -1,0 +1,208 @@
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\Arrays.java:13: error: [array.access.unsafe.high.constant] Potentially unsafe array access: the constant index 3 could be larger than the array's bound
+
+    array[3] = 0;
+          ^
+  found   : int @ArrayLen(2) []
+
+  required: @MinLen(4) -- an array guaranteed to have at least 4 elements
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\Arrays.java:34: error: [array.access.unsafe.high.constant] Potentially unsafe array access: the constant index 1 could be larger than the array's bound
+
+    array[1] = 10;
+          ^
+  found   : int []
+
+  required: @MinLen(2) -- an array guaranteed to have at least 2 elements
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\Arrays.java:52: error: [array.access.unsafe.high.constant] Potentially unsafe array access: the constant index 1 could be larger than the array's bound
+
+    array[1] = 10;
+          ^
+  found   : int @ArrayLen(1) []
+
+  required: @MinLen(2) -- an array guaranteed to have at least 2 elements
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\Arrays.java:81: error: [array.access.unsafe.high.range] Potentially unsafe array access: the index could be larger than the array's bound
+
+      if (arr[m] == x) return;
+              ^
+  index type found: @IntVal({0, 2, 3, 5}) int
+
+  array type found: int @ArrayLen(5) []
+
+  required        : index of type @IndexFor("arr") or @LTLengthOf("arr"), or array of type @MinLen(6)
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\Arrays.java:82: error: [array.access.unsafe.high.range] Potentially unsafe array access: the index could be larger than the array's bound
+
+      if (arr[m] < x) l = m + 1;
+              ^
+  index type found: @IntVal({0, 2, 3, 5}) int
+
+  array type found: int @ArrayLen(5) []
+
+  required        : index of type @IndexFor("arr") or @LTLengthOf("arr"), or array of type @MinLen(6)
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\Arrays.java:100: error: [array.access.unsafe.high.constant] Potentially unsafe array access: the constant index 0 could be larger than the array's bound
+
+    assert array[0] == 'h'
+                 ^
+  found   : char []
+
+  required: @MinLen(1) -- an array guaranteed to have at least 1 elements
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\Arrays.java:101: error: [array.access.unsafe.high.constant] Potentially unsafe array access: the constant index 1 could be larger than the array's bound
+
+        && array[1] == 'e'
+                 ^
+  found   : char []
+
+  required: @MinLen(2) -- an array guaranteed to have at least 2 elements
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\Arrays.java:102: error: [array.access.unsafe.high.constant] Potentially unsafe array access: the constant index 2 could be larger than the array's bound
+
+        && array[2] == 'l'
+                 ^
+  found   : char []
+
+  required: @MinLen(3) -- an array guaranteed to have at least 3 elements
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\Arrays.java:103: error: [array.access.unsafe.high.constant] Potentially unsafe array access: the constant index 3 could be larger than the array's bound
+
+        && array[3] == 'l'
+                 ^
+  found   : char []
+
+  required: @MinLen(4) -- an array guaranteed to have at least 4 elements
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\Arrays.java:104: error: [array.access.unsafe.high.constant] Potentially unsafe array access: the constant index 4 could be larger than the array's bound
+
+        && array[4] == 'o';
+                 ^
+  found   : char []
+
+  required: @MinLen(5) -- an array guaranteed to have at least 5 elements
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\Calls.java:65: error: [array.length.negative] Variable used in array creation could be negative.
+
+    int[] primeArray = new int[length];
+                               ^
+  found   : int
+
+  required: an integer >= 0 (@NonNegative or @Positive)
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\Calls.java:66: error: [array.access.unsafe.high.constant] Potentially unsafe array access: the constant index 0 could be larger than the array's bound
+
+    primeArray[0] = 2;
+               ^
+  found   : int []
+
+  required: @MinLen(1) -- an array guaranteed to have at least 1 elements
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:30: error: [array.access.unsafe.high] Potentially unsafe array access: the index could be larger than the array's bound
+
+      return array[i];
+                   ^
+  found   : int
+
+  required: @IndexFor("array") or @LTLengthOf("array") -- an integer less than array's length
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:57: error: [array.access.unsafe.high] Potentially unsafe array access: the index could be larger than the array's bound
+
+      return array[i];
+                   ^
+  found   : @LTEqLengthOf("array") int
+
+  required: @IndexFor("array") or @LTLengthOf("array") -- an integer less than array's length
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:84: error: [array.access.unsafe.low] Potentially unsafe array access: the index could be negative.
+
+      return array[i];
+                   ^
+  found   : int
+
+  required: an integer >= 0 (@NonNegative or @Positive)
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:101: error: [array.access.unsafe.low] Potentially unsafe array access: the index could be negative.
+
+      return array[i];
+                   ^
+  found   : @LowerBoundBottom int
+
+  required: an integer >= 0 (@NonNegative or @Positive)
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:133: error: [array.access.unsafe.low] Potentially unsafe array access: the index could be negative.
+
+      return array[j];
+                   ^
+  found   : int
+
+  required: an integer >= 0 (@NonNegative or @Positive)
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:133: error: [array.access.unsafe.high] Potentially unsafe array access: the index could be larger than the array's bound
+
+      return array[j];
+                   ^
+  found   : int
+
+  required: @IndexFor("array") or @LTLengthOf("array") -- an integer less than array's length
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:148: error: [array.access.unsafe.low] Potentially unsafe array access: the index could be negative.
+
+      return array[j];
+                   ^
+  found   : int
+
+  required: an integer >= 0 (@NonNegative or @Positive)
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:148: error: [array.access.unsafe.high] Potentially unsafe array access: the index could be larger than the array's bound
+
+      return array[j];
+                   ^
+  found   : int
+
+  required: @IndexFor("array") or @LTLengthOf("array") -- an integer less than array's length
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:263: error: [array.access.unsafe.high] Potentially unsafe array access: the index could be larger than the array's bound
+
+    return array[i];
+                 ^
+  found   : @LTEqLengthOf("array") int
+
+  required: @IndexFor("array") or @LTLengthOf("array") -- an integer less than array's length
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:275: error: [array.access.unsafe.high] Potentially unsafe array access: the index could be larger than the array's bound
+
+      return array[x] + array[y];
+                   ^
+  found   : int
+
+  required: @IndexFor("array") or @LTLengthOf("array") -- an integer less than array's length
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:275: error: [array.access.unsafe.high] Potentially unsafe array access: the index could be larger than the array's bound
+
+      return array[x] + array[y];
+                              ^
+  found   : int
+
+  required: @IndexFor("array") or @LTLengthOf("array") -- an integer less than array's length
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:288: error: [array.access.unsafe.high] Potentially unsafe array access: the index could be larger than the array's bound
+
+      return array[x] + array[y];
+                   ^
+  found   : int
+
+  required: @IndexFor("array") or @LTLengthOf("array") -- an integer less than array's length
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:288: error: [array.access.unsafe.high] Potentially unsafe array access: the index could be larger than the array's bound
+
+      return array[x] + array[y];
+                              ^
+  found   : int
+
+  required: @IndexFor("array") or @LTLengthOf("array") -- an integer less than array's length
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:306: error: [array.access.unsafe.high] Potentially unsafe array access: the index could be larger than the array's bound
+
+      sum += array[completed];
+                   ^
+  found   : int
+
+  required: @IndexFor("array") or @LTLengthOf("array") -- an integer less than array's length
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:323: error: [array.access.unsafe.low] Potentially unsafe array access: the index could be negative.
+
+          return array[i];
+                       ^
+  found   : int
+
+  required: an integer >= 0 (@NonNegative or @Positive)
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:323: error: [array.access.unsafe.high] Potentially unsafe array access: the index could be larger than the array's bound
+
+          return array[i];
+                       ^
+  found   : int
+
+  required: @IndexFor("array") or @LTLengthOf("array") -- an integer less than array's length
+C:\Users\nicla\OneDrive\Dokumenter\GitHub\Program-analysis-Group-10\jpamb-main\cases\jpamb\cases\ArrayBoundsProject.java:339: error: [array.access.unsafe.high] Potentially unsafe array access: the index could be larger than the array's bound
+
+      sum += array[completed];
+                   ^
+  found   : int
+
+  required: @IndexFor("array") or @LTLengthOf("array") -- an integer less than array's length
+29 errors

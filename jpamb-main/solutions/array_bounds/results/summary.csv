@@ -1,4 +1,4 @@
 config,methods,accesses,safe_labelled,false_warnings,false_warning_rate,faulty_labelled,detected,detection_rate,unresolved,unlabelled,runtime_median_s,runtime_iqr_s,steps,program_points,rel_state_size
-interval,33,113,31,5,0.161,8,8,1.000,0,73,0.020766,0.008833,1216,984,0
-dbm,33,113,31,1,0.032,8,8,1.000,0,73,0.439635,0.037573,1217,984,16577
-dbm-noexchange,33,113,31,1,0.032,8,8,1.000,0,73,0.230369,0.014569,1225,984,12222
+interval,33,113,94,12,0.128,18,18,1.000,0,0,0.032870,0.001593,1216,984,0
+dbm,33,113,94,6,0.064,18,18,1.000,0,0,0.489216,0.170505,1217,984,16577
+dbm-noexchange,33,113,94,6,0.064,18,18,1.000,0,0,0.284341,0.038228,1225,984,12222

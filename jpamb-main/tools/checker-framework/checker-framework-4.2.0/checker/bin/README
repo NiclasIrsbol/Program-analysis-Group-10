@@ -1,0 +1,15 @@
+This directory, "checker/bin", contains scripts to run the Checker Framework.
+Before using them, you must run `./gradlew assemble` in the parent directory.
+
+javac - Is a shell script that runs the Checker Framework in Unix systems
+including Mac OS X.  This script is a drop-in replacement for the script
+javac provided by the OpenJDK.
+
+javac.bat - Is the equivalent of the javac script for Windows systems.
+
+The other scripts are used for whole-program inference:
+infer-and-annotate.sh
+query-github.sh
+wpi.sh
+wpi-many.sh
+wpi-summary.sh

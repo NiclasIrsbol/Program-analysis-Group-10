@@ -39,3 +39,76 @@ jpamb.cases.Calls.generatePrimeArray:(I)[I,14,faulty,primeArray[0] fails when le
 jpamb.cases.Calls.generatePrimeArray:(I)[I,36,safe,for-each over primeArray
 jpamb.cases.Calls.generatePrimeArray:(I)[I,61,safe,primeArray[count] guarded by count < length == primeArray.length
 jpamb.cases.Calls.allPrimesArePositive:(I)V,13,safe,for-each over the returned array
+jpamb.cases.ArrayBoundsProject.guardedAccess:(I)I,5,safe,initialiser array[0]
+jpamb.cases.ArrayBoundsProject.guardedAccess:(I)I,9,safe,initialiser array[1]
+jpamb.cases.ArrayBoundsProject.guardedAccess:(I)I,13,safe,initialiser array[2]
+jpamb.cases.ArrayBoundsProject.guardedAccess:(I)I,23,safe,i guarded by i >= 0 and i < array.length
+jpamb.cases.ArrayBoundsProject.missingUpperBound:(I)I,5,safe,initialiser array[0]
+jpamb.cases.ArrayBoundsProject.missingUpperBound:(I)I,9,safe,initialiser array[1]
+jpamb.cases.ArrayBoundsProject.missingUpperBound:(I)I,13,safe,initialiser array[2]
+jpamb.cases.ArrayBoundsProject.missingUpperBound:(I)I,19,faulty,i has no upper-bound guard
+jpamb.cases.ArrayBoundsProject.strictUpperBound:(I)I,5,safe,initialiser array[0]
+jpamb.cases.ArrayBoundsProject.strictUpperBound:(I)I,9,safe,initialiser array[1]
+jpamb.cases.ArrayBoundsProject.strictUpperBound:(I)I,13,safe,initialiser array[2]
+jpamb.cases.ArrayBoundsProject.strictUpperBound:(I)I,23,safe,i >= 0 and i < array.length
+jpamb.cases.ArrayBoundsProject.inclusiveUpperBound:(I)I,5,safe,initialiser array[0]
+jpamb.cases.ArrayBoundsProject.inclusiveUpperBound:(I)I,9,safe,initialiser array[1]
+jpamb.cases.ArrayBoundsProject.inclusiveUpperBound:(I)I,13,safe,initialiser array[2]
+jpamb.cases.ArrayBoundsProject.inclusiveUpperBound:(I)I,23,faulty,guard permits i == array.length
+jpamb.cases.ArrayBoundsProject.strictLowerBound:(I)I,5,safe,initialiser array[0]
+jpamb.cases.ArrayBoundsProject.strictLowerBound:(I)I,9,safe,initialiser array[1]
+jpamb.cases.ArrayBoundsProject.strictLowerBound:(I)I,13,safe,initialiser array[2]
+jpamb.cases.ArrayBoundsProject.strictLowerBound:(I)I,23,safe,i >= 0 guard
+jpamb.cases.ArrayBoundsProject.missingLowerBound:(I)I,5,safe,initialiser array[0]
+jpamb.cases.ArrayBoundsProject.missingLowerBound:(I)I,9,safe,initialiser array[1]
+jpamb.cases.ArrayBoundsProject.missingLowerBound:(I)I,13,safe,initialiser array[2]
+jpamb.cases.ArrayBoundsProject.missingLowerBound:(I)I,21,faulty,i may be negative
+jpamb.cases.ArrayBoundsProject.recheckAfterArrayAssignment:()I,19,safe,reassigned array length 2 and i == 1
+jpamb.cases.ArrayBoundsProject.staleIndexAfterArrayAssignment:()I,15,faulty,i is stale at 4 but reassigned array length 2
+jpamb.cases.ArrayBoundsProject.safeDerivedIndex:(I)I,5,safe,initialiser array[0]
+jpamb.cases.ArrayBoundsProject.safeDerivedIndex:(I)I,9,safe,initialiser array[1]
+jpamb.cases.ArrayBoundsProject.safeDerivedIndex:(I)I,13,safe,initialiser array[2]
+jpamb.cases.ArrayBoundsProject.safeDerivedIndex:(I)I,17,safe,initialiser array[3]
+jpamb.cases.ArrayBoundsProject.safeDerivedIndex:(I)I,33,safe,j == i + 1 and i < length - 1
+jpamb.cases.ArrayBoundsProject.unsafeDerivedIndex:(I)I,5,safe,initialiser array[0]
+jpamb.cases.ArrayBoundsProject.unsafeDerivedIndex:(I)I,9,safe,initialiser array[1]
+jpamb.cases.ArrayBoundsProject.unsafeDerivedIndex:(I)I,13,safe,initialiser array[2]
+jpamb.cases.ArrayBoundsProject.unsafeDerivedIndex:(I)I,17,safe,initialiser array[3]
+jpamb.cases.ArrayBoundsProject.unsafeDerivedIndex:(I)I,31,faulty,j == i + 1 may equal array.length
+jpamb.cases.ArrayBoundsProject.recheckArrayLengthRelation:(I)I,26,safe,i guarded against both lengths
+jpamb.cases.ArrayBoundsProject.staleArrayLengthRelation:(I)I,22,faulty,a length was reassigned without matching i guard
+jpamb.cases.ArrayBoundsProject.safeLengthCopy:()I,17,safe,i == n - 1 == array.length - 1
+jpamb.cases.ArrayBoundsProject.staleLengthCopy:()I,20,faulty,n is stale after array reassignment
+jpamb.cases.ArrayBoundsProject.safeJoin:([II)I,21,safe,branch 0 uses length - 1 and branch 1 uses length - 2
+jpamb.cases.ArrayBoundsProject.unsafeJoin:([II)I,18,faulty,branch 1 uses i == array.length
+jpamb.cases.ArrayBoundsProject.safeComplementaryIndices:(II)I,5,safe,initialiser array[0]
+jpamb.cases.ArrayBoundsProject.safeComplementaryIndices:(II)I,9,safe,initialiser array[1]
+jpamb.cases.ArrayBoundsProject.safeComplementaryIndices:(II)I,13,safe,initialiser array[2]
+jpamb.cases.ArrayBoundsProject.safeComplementaryIndices:(II)I,17,safe,initialiser array[3]
+jpamb.cases.ArrayBoundsProject.safeComplementaryIndices:(II)I,21,safe,initialiser array[4]
+jpamb.cases.ArrayBoundsProject.safeComplementaryIndices:(II)I,37,safe,x + y == length - 1
+jpamb.cases.ArrayBoundsProject.safeComplementaryIndices:(II)I,40,safe,x + y == length - 1
+jpamb.cases.ArrayBoundsProject.unsafeComplementaryIndices:(II)I,5,safe,initialiser array[0]
+jpamb.cases.ArrayBoundsProject.unsafeComplementaryIndices:(II)I,9,safe,initialiser array[1]
+jpamb.cases.ArrayBoundsProject.unsafeComplementaryIndices:(II)I,13,safe,initialiser array[2]
+jpamb.cases.ArrayBoundsProject.unsafeComplementaryIndices:(II)I,17,safe,initialiser array[3]
+jpamb.cases.ArrayBoundsProject.unsafeComplementaryIndices:(II)I,21,safe,initialiser array[4]
+jpamb.cases.ArrayBoundsProject.unsafeComplementaryIndices:(II)I,35,faulty,x can equal array.length
+jpamb.cases.ArrayBoundsProject.unsafeComplementaryIndices:(II)I,38,safe,y is guarded as complementary and nonnegative
+jpamb.cases.ArrayBoundsProject.safeProgressInvariant:()I,5,safe,initialiser array[0]
+jpamb.cases.ArrayBoundsProject.safeProgressInvariant:()I,9,safe,initialiser array[1]
+jpamb.cases.ArrayBoundsProject.safeProgressInvariant:()I,13,safe,initialiser array[2]
+jpamb.cases.ArrayBoundsProject.safeProgressInvariant:()I,17,safe,initialiser array[3]
+jpamb.cases.ArrayBoundsProject.safeProgressInvariant:()I,21,safe,initialiser array[4]
+jpamb.cases.ArrayBoundsProject.safeProgressInvariant:()I,35,safe,completed progresses within remaining > 0
+jpamb.cases.ArrayBoundsProject.safeAliasGuard:(I)I,5,safe,initialiser array[0]
+jpamb.cases.ArrayBoundsProject.safeAliasGuard:(I)I,9,safe,initialiser array[1]
+jpamb.cases.ArrayBoundsProject.safeAliasGuard:(I)I,13,safe,initialiser array[2]
+jpamb.cases.ArrayBoundsProject.safeAliasGuard:(I)I,17,safe,initialiser array[3]
+jpamb.cases.ArrayBoundsProject.safeAliasGuard:(I)I,29,safe,j == i and i is guarded
+jpamb.cases.ArrayBoundsProject.unsafeProgressInvariant:()I,5,safe,initialiser array[0]
+jpamb.cases.ArrayBoundsProject.unsafeProgressInvariant:()I,9,safe,initialiser array[1]
+jpamb.cases.ArrayBoundsProject.unsafeProgressInvariant:()I,13,safe,initialiser array[2]
+jpamb.cases.ArrayBoundsProject.unsafeProgressInvariant:()I,17,safe,initialiser array[3]
+jpamb.cases.ArrayBoundsProject.unsafeProgressInvariant:()I,21,safe,initialiser array[4]
+jpamb.cases.ArrayBoundsProject.unsafeProgressInvariant:()I,35,faulty,loop permits completed == array.length

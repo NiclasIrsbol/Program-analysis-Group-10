@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<meta name="generator" content="hevea 2.35">
+<style type="text/css">
+.equationcontainer{position:relative;}
+.equationnumber{float:right;left:auto;position:absolute;right:0}
+.equationnumber-valign{float:right;left:auto;position:absolute;right:0;margin-top:-0.5em;}
+.floatrule{background-color: black; border: none; height: 1px; width: 80%}
+.phantom{display: inline-block; visibility: hidden}
+.hphantom{display: inline-block; height: 0; visibility: hidden}
+.vphantom{display: inline-block; visibility: hidden; width: 0}
+.smash{display: inline-block; height: 0; line-height: 0}
+.li-itemize{margin:1ex 0ex;}
+.li-enumerate{margin:1ex 0ex;}
+.dd-description{margin:0ex 0ex 1ex 4ex;}
+.dt-description{margin:0ex;}
+.toc{list-style:none;}
+.footnotetext{margin:0ex; padding:0ex;}
+div.footnotetext P{margin:0px; text-indent:1em;}
+.thefootnotes{text-align:left;margin:0ex;}
+.dt-thefootnotes{margin:0em;}
+.dd-thefootnotes{margin:0em 0em 0em 2em;}
+.footnoterule{background-color: black; border: none; height: 1px; margin: 1em auto 1em 0px; width: 40%}
+.caption{padding-left:2ex; padding-right:2ex; margin-left:auto; margin-right:auto}
+.title{margin:2ex auto;text-align:center}
+.titlemain{margin:1ex 2ex 2ex 1ex;}
+.titlerest{margin:0ex 2ex;}
+.center{text-align:center;margin-left:auto;margin-right:auto;}
+.flushleft{text-align:left;margin-left:0ex;margin-right:auto;}
+.flushright{text-align:right;margin-left:auto;margin-right:0ex;}
+div table{margin-left:inherit;margin-right:inherit;margin-bottom:2px;margin-top:2px}
+td table{margin:auto;}
+table{border-collapse:collapse;}
+td{padding:0;}
+.cellpadding0 tr td{padding:0;}
+.cellpadding1 tr td{padding:1px;}
+pre{text-align:left;margin-left:0ex;margin-right:auto;}
+blockquote{margin-left:4ex;margin-right:4ex;text-align:left;}
+td p{margin:0px;}
+.quote{margin-left:3em;margin-right:3em;text-align:inherit;text-indent:0pt}
+.quotation{margin-left:3em;margin-right:3em;text-align:inherit;text-indent:1.5em}
+.verse{margin-left:3em;margin-right:3em;text-indent:1.5em hanging each-line}
+.parbox{box-sizing: border-box;
+display: inline-block;
+text-indent: 0;
+}
+.rule-rect{fill: black;}
+.lrbox{box-sizing:border-box;display:inline-block;overflow:visible;white-space:nowrap;}
+.center-lrbox{display:inline-block;margin-left:50%;transform:translateX(-50%);}
+.makebox{}
+.framebox{border:1px solid black;padding:0.25em;}
+.vertical-rule{border:none;width:2px;background-color:black;}
+.horizontal-rule{border:none;background-color:black;}
+.hrule{border:none;height:2px;width:100%;background-color:black;}
+.hfill{border:none;height:1px;width:200%;background-color:black;}
+.vdisplay{border-collapse:separate;border-spacing:2px;line-height:1.1;width:auto; empty-cells:show; border:2px solid red;}
+.vdcell{white-space:nowrap;padding:0px; border:2px solid green;}
+.display{border-collapse:separate;border-spacing:2px;line-height:1.1;width:auto; border:none;}
+.dcell{white-space:nowrap;padding:0px; border:none;}
+.dcenter{margin:0ex auto;}
+.vdcenter{border:solid #FF8000 2px; margin:0ex auto;}
+.minipage{text-align:left; margin-left:0em; margin-right:auto;}
+.marginpar{border:solid thin black; margin-bottom:1ex; width:20%; text-align:left;}
+.marginparleft{float:left; clear:left; margin-left:0ex; margin-right:1ex;}
+.marginparright{float:right; clear:right; margin-left:1ex; margin-right:0ex;}
+.theorem{text-align:left;margin:1ex auto 1ex 0ex;}
+.part{margin:2ex auto;text-align:center}
+</style>
+<title>Annotation File Format Specification
+</title>
+</head>
+<body >
+<!--HEVEA command line is: hevea -fix -exec xxdate.exe urlhref.hva annotation-file-format.tex -->
+<!--CUT STYLE article--><!--CUT DEF section 1 --><table class="title"><tr><td style="padding:1ex"><h1 class="titlemain">Annotation File Format Specification</h1><h3 class="titlerest"><a href="https://checkerframework.org/annotation-file-utilities/"><span style="font-family:monospace">https://checkerframework.org/annotation-file-utilities/</span></a> <br>
+June&#X2004;&#X200D;1, 2026</h3></td></tr>
+</table><!--TOC section id="sec1" Contents-->
+<h2 id="sec1" class="section">Contents</h2><!--SEC END --><ul class="toc"><li class="li-toc">
+<a href="#purpose">1&#X2003;Purpose: External storage of annotations</a>
+</li><li class="li-toc"><a href="#grammar">2&#X2003;Grammar</a>
+<ul class="toc"><li class="li-toc">
+<a href="#grammar-conventions">2.1&#X2003;Grammar conventions</a>
+</li><li class="li-toc"><a href="#java-file-grammar">2.2&#X2003;Java file grammar</a>
+</li><li class="li-toc"><a href="#bytecode-locations">2.3&#X2003;Bytecode Locations</a>
+</li><li class="li-toc"><a href="#annotations-grammar">2.4&#X2003;Annotations</a>
+</li></ul>
+</li><li class="li-toc"><a href="#example">3&#X2003;Example</a>
+</li><li class="li-toc"><a href="#types-and-values">4&#X2003;Types and values</a>
+</li><li class="li-toc"><a href="#alternative-formats">5&#X2003;Alternative formats</a>
+</li></ul>
+<!--TOC section id="purpose" Purpose: External storage of annotations-->
+<h2 id="purpose" class="section">1&#X2003;Purpose: External storage of annotations</h2><!--SEC END --><p>Java annotations are meta-data about Java program elements, as in
+&#X201C;<span style="font-family:monospace">@Deprecated class Date { &#X2026; }</span>&#X201D;.
+Ordinarily, Java annotations are written in the source code of a
+<span style="font-family:monospace">.java</span> Java source file. When <span style="font-family:monospace">javac</span> compiles the source code,
+it inserts the annotations in the resulting <span style="font-family:monospace">.class</span> file (as
+&#X201C;attributes&#X201D;).</p><p>Sometimes, it is convenient to specify the annotations outside the source
+code or the <span style="font-family:monospace">.class</span> file.
+</p><ul class="itemize"><li class="li-itemize">
+When source code is not available, a textual file provides a format for
+writing and storing annotations that is much easier to read and modify
+than a <span style="font-family:monospace">.class</span> file. Even if the eventual purpose is to insert the
+annotations in the <span style="font-family:monospace">.class</span> file, the annotations must be specified
+in some textual format first.
+</li><li class="li-itemize">Even when source code is available, sometimes it should not be changed,
+yet annotations must be stored somewhere for use by tools.
+</li><li class="li-itemize">A textual file for annotations can eliminate code clutter. A developer
+performing some specialized task (such as code verification,
+parallelization, etc.) can store annotations in an annotation file without
+changing the main version of the source code. (The developer&#X2019;s private
+version of the code could contain the annotations, but the developer
+could move them to the separate file before committing changes.)
+</li><li class="li-itemize">Tool writers may find it more convenient to use a textual file, rather
+than writing a Java or <span style="font-family:monospace">.class</span> file parser.
+</li><li class="li-itemize">When debugging annotation-processing tools, a textual file format
+(extracted from the Java or <span style="font-family:monospace">.class</span> files) is easier to read and
+is easier for use in testing.
+</li></ul><p>All of these uses require an external, textual file format for Java annotations.
+The external file format should be easy for people to create, read, and
+modify.
+An &#X201C;annotation file&#X201D; serves this purpose by specifying a set of
+Java annotations.
+The Annotation File Utilities
+(<a href="https://checkerframework.org/annotation-file-utilities/"><span style="font-family:monospace">https://checkerframework.org/annotation-file-utilities/</span></a>) are a set
+of tools that process annotation files.</p><p>The file format discussed in this document supports both standard Java SE 5
+declaration annotations and also the type annotations that are introduced by Java SE 8.
+The file format provides a simple syntax to represent the structure of a Java
+program. For annotations in method bodies of <span style="font-family:monospace">.class</span> files the annotation
+file closely follows
+section &#X201C;Class File Format Extensions&#X201D; of the JSR 308 design document&#X2004;&#X200D;[<a href="#JSR308-webpage-201310">Ern13</a>],
+which explains how the annotations are stored in the <span style="font-family:monospace">.class</span>
+file.
+In that sense, the current design is extremely low-level, and users
+probably would not want to write the files by hand (but they might fill in a
+template that a tool generated automatically). As future work, we should
+design a more
+user-friendly format that permits Java signatures to be directly specified.
+For <span style="font-family:monospace">.java</span> source files, the file format provides a separate, higher-level
+syntax for annotations in method bodies.</p><p>By convention, an annotation file ends with &#X201C;<span style="font-family:monospace">.jaif</span>&#X201D; (for &#X201C;Java
+annotation index file&#X201D;), but this is not required.</p>
+<!--TOC section id="grammar" Grammar-->
+<h2 id="grammar" class="section">2&#X2003;Grammar</h2><!--SEC END --><p>This section describes the annotation file format in detail by presenting it in
+the form of a grammar. Section&#X2004;&#X200D;<a href="#grammar-conventions">2.1</a> details the conventions
+of the grammar. Section&#X2004;&#X200D;<a href="#java-file-grammar">2.2</a> shows how to represent the
+basic structure of a Java program (classes, methods, etc.) in an annotation
+file. Section&#X2004;&#X200D;<a href="#annotations-grammar">2.4</a> shows how to add annotations to an
+annotation file.</p>
+<!--TOC subsection id="grammar-conventions" Grammar conventions-->
+<h3 id="grammar-conventions" class="subsection">2.1&#X2003;Grammar conventions</h3><!--SEC END --><p>Throughout this document, &#X201C;name&#X201D; is any valid Java simple name or
+binary name, &#X201C;type&#X201D; is any valid type, and &#X201C;value&#X201D; is any
+valid Java constant, and quoted strings are literal values.
+The Kleene qualifiers &#X201C;*&#X201D; (zero or more), &#X201C;?&#X201D; (zero or one), and &#X201C;+&#X201D;
+(one or more) denote plurality of a grammar element.
+A vertical bar (&#X201C;|&#X201D;) separates alternatives.
+Parentheses (&#X201C;()&#X201D;) denote grouping, and square brackets (&#X201C;[]&#X201D;)
+denote optional syntax, which is equivalent to &#X201C;( &#X2026; ) ?&#X201D; but more concise.
+We use the hash/pound/octothorpe symbol (&#X201C;#&#X201D;) for comments within the grammar.</p><p>In the annotation file,
+besides its use as token separator,
+whitespace (excluding
+newlines) is optional with one exception: no space is permitted
+between an &#X201C;@&#X201D; character and a subsequent name. Indentation is
+ignored, but is encouraged to maintain readability of the hierarchy of
+program elements in the class (see the example in Section&#X2004;&#X200D;<a href="#example">3</a>).</p><p>Comments can be written throughout the annotation file using the double-slash
+syntax employed by Java for single-line comments: anything following
+two adjacent slashes (&#X201C;//&#X201D;) until the first newline is a comment.
+This is omitted from the grammar for simplicity.
+Block comments (&#X201C;/* &#X2026; */&#X201D;) are not allowed.</p><p>The line end symbol &#X201C;<span style="font-weight:bold">\n</span>&#X201D; is used for all the different line end
+conventions, that is, Windows- and Unix-style newlines are supported.</p>
+<!--TOC subsection id="java-file-grammar" Java file grammar-->
+<h3 id="java-file-grammar" class="subsection">2.2&#X2003;Java file grammar</h3><!--SEC END --><p>This section shows how to represent the basic structure of a Java program
+(classes, methods, etc.) in an annotation file. For Java elements that can
+contain annotations, this section will reference grammar productions contained
+in Section&#X2004;&#X200D;<a href="#annotations-grammar">2.4</a>, which describes how annotations are used
+in an annotation file.</p><p>An annotation file has the same basic structure as a Java program. That is,
+there are packages, classes, fields and methods.</p><p>The annotation file may omit certain program elements &#X2014; for instance, it
+may mention only some of the packages in a program, or only some of the
+classes in a package, or only some of the fields or methods of a class.
+Program elements that do not appear in the annotation file are treated as
+unannotated.</p>
+<!--TOC subsubsection id="package-definitions" Package definitions-->
+<h4 id="package-definitions" class="subsubsection">2.2.1&#X2003;Package definitions</h4><!--SEC END --><p>At the root of an annotation file is one or more package definitions.
+A package definition describes a package containing a list of annotation
+definitions and classes. A package definition also contains any
+annotations on the package (such as those from a
+<span style="font-family:monospace">package-info.java</span> file).</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>annotation-file</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>package-definition</em></span>+ </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>package-definition</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">package</span>&#X201D; ( &#X201C;<span style="font-weight:bold">:</span>&#X201D; ) | ( <span style="font-family:sans-serif"><em>name</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>decl-annotation</em></span>* ) &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;( <span style="font-family:sans-serif"><em>annotation-definition</em></span> | <span style="font-family:sans-serif"><em>class-definition</em></span> ) *
+</td></tr>
+</table><p>Use a package line of <span style="font-family:monospace">package:</span> for the default package. Note that
+annotations on the default package are not allowed.</p>
+<!--TOC subsubsection id="class-definitions" Class definitions-->
+<h4 id="class-definitions" class="subsubsection">2.2.2&#X2003;Class definitions</h4><!--SEC END --><p>A class definition describes the annotations present on a class declaration,
+as well as fields and methods of the class. It is organized according to
+the hierarchy of fields and methods in the class.
+Note that we use <span style="font-family:sans-serif"><em>class-definition</em></span> also for interfaces, enums, and
+annotation types (to specify annotations in an existing annotation type, not to
+be confused with <span style="font-family:sans-serif"><em>annotation-definition</em></span>s described in
+Section&#X2004;&#X200D;<a href="#annotation-definitions">2.4.1</a>, which defines annotations to be used
+throughout an annotation file); for syntactic simplicity, we use &#X201C;<span style="font-weight:bold">class</span>&#X201D;
+for
+all such definitions.
+</p><p>Inner classes are treated as ordinary classes whose names happen to contain
+<span style="font-family:monospace">$</span> signs and must be defined at the top level of a class definition file.
+(To change this, the grammar would have to be extended with a closing
+delimiter for classes; otherwise, it would be ambiguous whether a
+field or method appearing after an inner class definition belonged to the
+inner class or the outer class.) The syntax for inner class names is the same as
+is used by the <span style="font-family:monospace">javac</span> compiler. A good way to get an idea of the inner
+class names for a class is to compile the class and look at the filenames of the
+<span style="font-family:monospace">.class</span> files that are produced.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>class-definition</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">class</span>&#X201D; <span style="font-family:sans-serif"><em>name</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>decl-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>typeparam-definition</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>typeparam-bound</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>extends</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>implements</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>field-definition</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>staticinit</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>instanceinit</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>method-definition</em></span>*
+</td></tr>
+</table><p>Annotations on the &#X201C;<span style="font-weight:bold">class</span>&#X201D; line are annotations on the class declaration,
+not the class name.</p>
+<!--TOC paragraph id="sec8" Type parameter definitions-->
+<h4 id="sec8" class="paragraph">Type parameter definitions</h4><!--SEC END --><p>The <span style="font-family:sans-serif"><em>typeparam-definition</em></span> production defines annotations on the
+declaration of a type parameter, such as on <span style="font-family:monospace">K</span> and <span style="font-family:monospace">T</span> in</p><pre class="verbatim">public class Class&lt;K&gt; {
+    public &lt;T&gt; void m() {
+        ...
+    }
+}
+</pre><p>or on the type parameters on the left-hand side of a member reference,
+as on <span style="font-family:monospace">String</span> in <span style="font-family:monospace">List&lt;String&gt;::size</span>.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>typeparam-definition</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The integer is the zero-based type parameter index. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">typeparam</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>type-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>*
+</td></tr>
+</table>
+<!--TOC paragraph id="sec9" Type Parameter Bounds-->
+<h4 id="sec9" class="paragraph">Type Parameter Bounds</h4><!--SEC END --><p>The <span style="font-family:sans-serif"><em>typeparam-bound</em></span> production defines annotations on a bound of a
+type variable declaration, such as on <span style="font-family:monospace">Number</span> and <span style="font-family:monospace">Date</span> in</p><pre class="verbatim">public class Class&lt;K extends Number&gt; {
+    public &lt;T extends Date&gt; void m() {
+        ...
+    }
+}
+</pre><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>typeparam-bound</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The integers are respectively the parameter and bound indexes of </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# the type parameter bound&#X2004;&#X200D;[<a href="#JSR308-webpage-201310">Ern13</a>]. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">bound</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> &#X201C;<span style="font-weight:bold">&amp;</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>type-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>*
+</td></tr>
+</table>
+<!--TOC paragraph id="sec10" Implements and extends-->
+<h4 id="sec10" class="paragraph">Implements and extends</h4><!--SEC END --><p>The <span style="font-family:sans-serif"><em>extends</em></span> and <span style="font-family:sans-serif"><em>implements</em></span> productions
+define annotations on the names of classes a class <span style="font-family:monospace">extends</span> or
+<span style="font-family:monospace">implements</span>.
+(Note: For interface declarations, <span style="font-family:sans-serif"><em>implements</em></span> rather than
+<span style="font-family:sans-serif"><em>extends</em></span> defines annotations on the names of extended
+interfaces.)</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>extends</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">extends</span>&#X201D; &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>type-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>implements</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The integer is the zero-based index of the implemented interface. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">implements</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>type-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>*
+</td></tr>
+</table>
+<!--TOC paragraph id="sec11" Static and instance initializers-->
+<h4 id="sec11" class="paragraph">Static and instance initializers</h4><!--SEC END --><p>The <span style="font-family:sans-serif"><em>staticinit</em></span> and <span style="font-family:sans-serif"><em>instanceinit</em></span> productions
+define annotations on code within static or instance initializer blocks.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>staticinit</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The integer is the zero-based index of the implemented interface. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">staticinit</span>&#X201D; &#X201C;<span style="font-weight:bold">*</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>*
+</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>instanceinit</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The integer is the zero-based index of the implemented interface. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">instanceinit</span>&#X201D; &#X201C;<span style="font-weight:bold">*</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>*
+</td></tr>
+</table>
+<!--TOC subsubsection id="field-definitons" Field definitions-->
+<h4 id="field-definitons" class="subsubsection">2.2.3&#X2003;Field definitions</h4><!--SEC END --><p>A field definition can have annotations on the declaration, the type of the
+field, or &#X2014; if in source code &#X2014; the field&#X2019;s initialization.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>field-definition</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">field</span>&#X201D; <span style="font-family:sans-serif"><em>name</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>decl-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>type-annotations</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>expression-annotations</em></span>*
+</td></tr>
+</table><p>Annotations on the &#X201C;<span style="font-weight:bold">field</span>&#X201D; line are on the field declaration, not the
+type of the field.</p><p>The <span style="font-family:sans-serif"><em>expression-annotations</em></span> production specifies annotations on the
+initialization expression of a field. If a field is initialized at declaration
+then in bytecode the initialization is moved to the constructor when the class
+is compiled. Therefore for bytecode, annotations on the initialization
+expression go in the constructor (see Section&#X2004;&#X200D;<a href="#method-definitions">2.2.4</a>), rather
+than the field definition. Source code annotations for the field initialization
+expression are valid on the field definition.</p>
+<!--TOC subsubsection id="method-definitions" Method definitions-->
+<h4 id="method-definitions" class="subsubsection">2.2.4&#X2003;Method definitions</h4><!--SEC END --><p>A method definition can have annotations on the method declaration, in the
+method signature (return type, parameters, etc.), as well as the method body.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>method-definition</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">method</span>&#X201D; <span style="font-family:sans-serif"><em>method-key</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>decl-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>typeparam-definition</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>typeparam-bound</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>return-type</em></span>? </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>receiver-definition</em></span>? </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>parameter-definition</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>variable-definition</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>expression-annotations</em></span>*
+</td></tr>
+</table><p>The annotations on the &#X201C;<span style="font-weight:bold">method</span>&#X201D; line are on the method declaration, not
+on the return value. The <span style="font-family:sans-serif"><em>method-key</em></span> consists of the simple name followed
+by a method descriptor, which is the signature in JVML format
+(see JVMS &#XA7;4.3.3, <a href="https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.3.3"><span style="font-family:monospace">https://docs.oracle.com/javase/specs/jvms/se11/html/jvms-4.html#jvms-4.3.3</span></a>). For example, the following method</p><pre class="verbatim">boolean foo(int[] i, String s) {
+  ...
+}
+</pre><p>has the <span style="font-family:sans-serif"><em>method-key</em></span>:</p><pre class="verbatim">foo([ILjava/lang/String;)Z
+</pre><p>Note that the
+signature is the erased signature of the method and does not contain generic
+type information, but does contain the return type. Using <span style="font-family:monospace">javap -s</span> makes
+it easy to find the signature. The method keys &#X201C;<span style="font-family:monospace">&lt;init&gt;</span>&#X201D; and
+&#X201C;<span style="font-family:monospace">&lt;clinit&gt;</span>&#X201D; are used to name instance (constructor) and class (static)
+initialization methods. (The name of the constructor&#X2014;that is, the final
+element of the class name&#X2014;can be used in place of &#X201C;<span style="font-family:monospace">&lt;init&gt;</span>&#X201D;.)
+For both instance and class initializers, the &#X201C;return type&#X201D; part of the
+signature should be <span style="font-family:monospace">V</span> (for <span style="font-family:monospace">void</span>).</p>
+<!--TOC paragraph id="sec14" Return type-->
+<h4 id="sec14" class="paragraph">Return type</h4><!--SEC END --><p>A return type defines the annotations on the return type of a method
+declaration. It is also used for the result of a constructor.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>return-type</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">return:</span>&#X201D; <span style="font-family:sans-serif"><em>type-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>*
+</td></tr>
+</table>
+<!--TOC paragraph id="sec15" Receiver definition-->
+<h4 id="sec15" class="paragraph">Receiver definition</h4><!--SEC END --><p>A receiver definition defines the annotations on the type of the receiver
+parameter in a method declaration. A method receiver is the implicit formal
+parameter, <span style="font-family:monospace">this</span>, used in non-static methods. For source code insertion,
+the receiver parameter will be inserted if it does not already exist.</p><p>Only inner classes have a receiver. A top-level constructor does not have
+a receiver, though it does have a result. The type of a constructor result
+is represented as a return type.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>receiver-definition</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">receiver:</span>&#X201D; <span style="font-family:sans-serif"><em>type-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>*
+</td></tr>
+</table>
+<!--TOC paragraph id="sec16" Parameter definition-->
+<h4 id="sec16" class="paragraph">Parameter definition</h4><!--SEC END --><p>A formal parameter definition defines the annotations on a method formal
+parameter declaration and the type of a method formal parameter, but
+<em>not</em> the receiver formal parameter.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>parameter-definition</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The integer is the zero-based index of the formal parameter in the method. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">parameter</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>decl-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>type-annotations</em></span>*
+</td></tr>
+</table><p>The annotations on the &#X201C;<span style="font-weight:bold">parameter</span>&#X201D; line are on the formal parameter
+declaration, not on the type of the parameter. A parameter index of 0 is the
+first formal parameter. The receiver parameter is not index 0. Use the
+<span style="font-family:sans-serif"><em>receiver-definition</em></span> production to annotate the receiver parameter.</p>
+<!--TOC subsection id="bytecode-locations" Bytecode Locations-->
+<h3 id="bytecode-locations" class="subsection">2.3&#X2003;Bytecode Locations</h3><!--SEC END --><p>Certain elements in the body of a method or the initialization expression of a
+field can be annotated. The <span style="font-family:sans-serif"><em>expression-annotations</em></span> rule describes the
+annotations that can be added to a method body or a field initialization
+expression:</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>expression-annotations</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>typecast</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>instanceof</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>new</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>call</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>reference</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>lambda</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>source-insert-typecast</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>source-insert-annotation</em></span>*
+</td></tr>
+</table><p>Additionally, a variable declaration in a method body can be annotated with the
+<span style="font-family:sans-serif"><em>variable-definition</em></span> rule, which appears below.</p><p>Because of the differences between Java source code and <span style="font-family:monospace">.class</span> files,
+the syntax for specifying code locations is different for <span style="font-family:monospace">.class</span> files
+and source code. For <span style="font-family:monospace">.class</span> files we use a syntax called &#X201C;bytecode
+offsets&#X201D;. For source code we use a different syntax called &#X201C;source code
+indexes&#X201D;. These are both described below.</p><p>If you wish to be able to insert a given code annotation in both a <span style="font-family:monospace">.class</span> file and a source
+code file, the annotation file must redundantly specify the annotation&#X2019;s bytecode offset and source
+code index. This can be done in a single <span style="font-family:monospace">.jaif</span> file or two separate
+<span style="font-family:monospace">.jaif</span> files. It is not necessary to include
+redundant information to insert annotations on signatures in both <span style="font-family:monospace">.class</span>
+files and source code.</p><p>Additionally, a new typecast with annotations (rather than an annotation added to an
+existing typecast) can be inserted into source code. This uses a third
+syntax that is described below under &#X201C;AST paths&#X201D;.
+A second way to insert a typecast is by specifying just an annotation, not
+a full typecast (<span style="font-family:monospace">insert-annotation</span> instead of
+<span style="font-family:monospace">insert-typecast</span>). In this case, the source annotation insertion
+tool generates a full typecast if Java syntax requires one.</p>
+<!--TOC subsubsection id="bytecode-offsets" Bytecode offsets-->
+<h4 id="bytecode-offsets" class="subsubsection">2.3.1&#X2003;Bytecode offsets</h4><!--SEC END --><p>For locations in bytecode, the
+annotation file uses offsets into the bytecode array of the class file to
+indicate the specific expression to which the annotation refers. Because
+different compilation strategies yield different <span style="font-family:monospace">.class</span> files, a
+tool that maps such annotations from an annotation file into source code must
+have access to the specific <span style="font-family:monospace">.class</span> file that was used to generate
+the annotation file. The
+<span style="font-family:monospace">javap -v</span> command is an effective technique to discover bytecode
+offsets. Non-expression annotations such as those on methods,
+fields, classes, etc., do not use a bytecode offset.</p>
+<!--TOC subsubsection id="source-code-indexes" Source code indexes-->
+<h4 id="source-code-indexes" class="subsubsection">2.3.2&#X2003;Source code indexes</h4><!--SEC END --><p>For locations in source code, the annotation file indicates the kind of
+expression, plus a zero-based index to indicate which occurrence of that kind of
+expression. For example,</p><pre class="verbatim">public void method() {
+    Object o1 = new @A String();
+    String s = (@B String) o1;
+    Object o2 = new @C Integer(0);
+    Integer i = (@D Integer) o2;
+}
+</pre><p><span style="font-family:monospace">@A</span> is on new, index 0. <span style="font-family:monospace">@B</span> is on typecast, index 0. <span style="font-family:monospace">@C</span> is on
+new, index 1. <span style="font-family:monospace">@D</span> is on typecast, index 1.</p><p>Source code indexes only include occurrences in the class that exactly matches
+the name of the enclosing <span style="font-family:sans-serif"><em>class-definition</em></span> rule. Specifically,
+occurrences in nested classes are not included. Use a new
+<span style="font-family:sans-serif"><em>class-definition</em></span> rule with the name of the nested class for source code
+insertions in a nested class.</p>
+<!--TOC subsubsection id="code-grammar" Code locations grammar-->
+<h4 id="code-grammar" class="subsubsection">2.3.3&#X2003;Code locations grammar</h4><!--SEC END --><p>For each kind of expression, the grammar contains a separate location rule.
+This location rule contains the bytecode offset syntax followed by the
+source code index syntax.</p><p>The grammar uses &#X201C;<span style="font-weight:bold">#</span>&#X201D; for bytecode offsets and &#X201C;<span style="font-weight:bold">*</span>&#X201D; for source code indexes.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>variable-location</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# Bytecode offset: the integers are respectively the index, start, and length </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# fields of the annotations on this variable&#X2004;&#X200D;[<a href="#JSR308-webpage-201310">Ern13</a>]. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;(<span style="font-family:sans-serif"><em>integer</em></span> &#X201C;<span style="font-weight:bold">#</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> &#X201C;<span style="font-weight:bold">+</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span>) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# Source code index: the <span style="font-family:sans-serif"><em>name</em></span> is the identifier of the local variable. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The <span style="font-family:sans-serif"><em>integer</em></span> is the optional zero-based index of the intended local </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# variable within all local variables with the given <span style="font-family:sans-serif"><em>name</em></span>. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The default value for the index is zero. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| (<span style="font-family:sans-serif"><em>name</em></span> [&#X201C;<span style="font-weight:bold">*</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span>]) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>variable-definition</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The annotations on the &#X201C;<span style="font-weight:bold">local</span>&#X201D; line are on the variable declaration, </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# not the type of the variable. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">local</span>&#X201D; <span style="font-family:sans-serif"><em>variable-location</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>decl-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>type-annotations</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>typecast-location</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# Bytecode offset: the first integer is the offset field and the optional </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# second integer is the type index of an intersection type&#X2004;&#X200D;[<a href="#JSR308-webpage-201310">Ern13</a>]. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The type index defaults to zero if not specified. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;(&#X201C;<span style="font-weight:bold">#</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> [ &#X201C;<span style="font-weight:bold">,</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ]) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# Source code index: the first integer is the zero-based index of the typecast </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# within the method and the optional second integer is the type index of an </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# intersection type&#X2004;&#X200D;[<a href="#JSR308-webpage-201310">Ern13</a>]. The type index defaults to zero if not specified. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| (&#X201C;<span style="font-weight:bold">*</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> [ &#X201C;<span style="font-weight:bold">,</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ]) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>typecast</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">typecast</span>&#X201D; <span style="font-family:sans-serif"><em>typecast-location</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>type-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>instanceof-location</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# Bytecode offset: the integer is the offset field of the annotation&#X2004;&#X200D;[<a href="#JSR308-webpage-201310">Ern13</a>]. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;(&#X201C;<span style="font-weight:bold">#</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span>) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# Source code index: the integer is the zero-based index of the <span style="font-family:monospace">instanceof</span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# within the method. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| (&#X201C;<span style="font-weight:bold">*</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span>) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>instanceof</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">instanceof</span>&#X201D; <span style="font-family:sans-serif"><em>instanceof-location</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>type-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>new-location</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# Bytecode offset: the integer is the offset field of the annotation&#X2004;&#X200D;[<a href="#JSR308-webpage-201310">Ern13</a>]. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;(&#X201C;<span style="font-weight:bold">#</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span>) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# Source code index: the integer is the zero-based index of the object or array </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# creation within the method. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| (&#X201C;<span style="font-weight:bold">*</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span>) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>new</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">new</span>&#X201D; <span style="font-family:sans-serif"><em>new-location</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>type-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>*
+</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>call-location</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# Bytecode offset: the integer is the offset field of the annotation&#X2004;&#X200D;[<a href="#JSR308-webpage-201310">Ern13</a>]. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;(&#X201C;<span style="font-weight:bold">#</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span>) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# Source code index: the integer is the zero-based index of the method call </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# within the field or method definition. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| (&#X201C;<span style="font-weight:bold">*</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span>) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>call</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">call</span>&#X201D; <span style="font-family:sans-serif"><em>call-location</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>typearg-definition</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>reference-location</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# Bytecode offset: the integer is the offset field of the annotation&#X2004;&#X200D;[<a href="#JSR308-webpage-201310">Ern13</a>]. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;(&#X201C;<span style="font-weight:bold">#</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span>) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# Source code index: the integer is the zero-based index of the member </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# reference&#X2004;&#X200D;[<a href="#JSR308-webpage-201310">Ern13</a>]. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| (&#X201C;<span style="font-weight:bold">*</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span>) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>reference</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">reference</span>&#X201D; <span style="font-family:sans-serif"><em>reference-location</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>type-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>typearg-definition</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>lambda-location</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# Bytecode offset: the integer is the offset field of the annotation&#X2004;&#X200D;[<a href="#JSR308-webpage-201310">Ern13</a>]. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;(&#X201C;<span style="font-weight:bold">#</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span>) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# Source code index: the integer is the zero-based index of the lambda </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# expression&#X2004;&#X200D;[<a href="#JSR308-webpage-201310">Ern13</a>]. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| (&#X201C;<span style="font-weight:bold">*</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span>) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>lambda</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">lambda</span>&#X201D; <span style="font-family:sans-serif"><em>lambda-location</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>parameter-definition</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>variable-definition</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>expression-annotations</em></span>*
+</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>typearg-definition</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The integer is the zero-based type argument index. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">typearg</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>type-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>*
+</td></tr>
+</table>
+<!--TOC subsubsection id="ast-paths" AST paths-->
+<h4 id="ast-paths" class="subsubsection">2.3.4&#X2003;AST paths</h4><!--SEC END --><p>A path through the AST (abstract
+syntax tree) specifies an arbitrary expression in source code to modify.
+AST paths can be used in the <span style="font-family:monospace">.jaif</span> file to specify a location to
+insert either a bare annotation (&#X201C;<span style="font-weight:bold">insert-annotation</span>&#X201D;) or a cast
+(&#X201C;<span style="font-weight:bold">insert-typecast</span>&#X201D;).</p><p>For a cast insertion, the <span style="font-family:monospace">.jaif</span> file specifies the type to cast to.
+The annotations on the &#X201C;<span style="font-weight:bold">insert-typecast</span>&#X201D; line will be inserted on
+the outermost type of the type to cast to. If the type to cast to is a compound
+type then annotations on parts of the compound type are specified with the
+<span style="font-family:sans-serif"><em>compound-type</em></span> rule. If there are no annotations on
+the &#X201C;<span style="font-weight:bold">insert-typecast</span>&#X201D; line then a cast with no annotations will be
+inserted or, if compound type annotations are specified, a cast with annotations
+only on the compound types will be inserted.</p><p>Note that the type specified on the &#X201C;<span style="font-weight:bold">insert-typecast</span>&#X201D; line cannot contain
+any qualified type names. For example, use <span style="font-family:monospace">Entry&lt;String, Object&gt;</span> instead
+of <span style="font-family:monospace">Map.Entry&lt;java.lang.String, java.lang.Object&gt;</span>.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" >
+<span style="font-family:sans-serif"><em>source-insert-typecast</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# <span style="font-family:sans-serif"><em>ast-path</em></span> is described below. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# <span style="font-family:sans-serif"><em>type</em></span> is the un-annotated type to cast to. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">insert-typecast</span>&#X201D; <span style="font-family:sans-serif"><em>ast-path</em></span>&#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>type-annotation</em></span>* <span style="font-family:sans-serif"><em>type</em></span> &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>*
+</td></tr>
+</table><p>An AST path represents a traversal through the AST. AST paths can only be
+used in <span style="font-family:sans-serif"><em>field-definition</em></span>s and <span style="font-family:sans-serif"><em>method-definition</em></span>s.
+An AST path starts with the first element under the definition. For
+methods this is <span style="font-family:monospace">Block</span> and for fields this is <span style="font-family:monospace">Variable</span>.</p><p>An AST path is composed of one or more AST entries, separated by commas. Each
+AST entry is composed of a tree kind, a child selector, and an optional
+argument. An example AST entry is:</p><pre class="verbatim">Block.statement 1
+</pre><p>The tree kind is <span style="font-family:monospace">Block</span>, the child selector is <span style="font-family:monospace">statement</span> and the
+argument is <span style="font-family:monospace">1</span>.</p><p>The available tree kinds correspond to the Java AST tree nodes (from the package
+<span style="font-family:monospace">com.sun.source.tree</span>), but with &#X201C;Tree&#X201D; removed from the name. For
+example, the class <span style="font-family:monospace">com.sun.source.tree.BlockTree</span> is represented as
+<span style="font-family:monospace">Block</span>. The child selectors correspond to the method names of the given
+Java AST tree node, with &#X201C;get&#X201D; removed from the beginning of the method name
+and the first letter lowercased. In cases where the child selector method
+returns a list, the method name is made singular and the AST entry also contains
+an argument to select the index of the list to take. For example, the method
+<span style="font-family:monospace">com&#173;.sun&#173;.source&#173;.tree&#173;.Block&#173;Tree&#173;.get&#173;Statements()</span> is represented as
+<span style="font-family:monospace">Block.statement</span> and requires an argument to select the statement to take.</p><p>The following is an example of an entire AST path:</p><pre class="verbatim">Block.statement 1, Switch.case 1, Case.statement 0, ExpressionStatement.expression,
+    MethodInvocation.argument 0
+</pre><p>Since the above example starts with a <span style="font-family:monospace">Block</span> it belongs in a
+<span style="font-family:sans-serif"><em>method-definition</em></span>. This AST path would select an expression that is in
+statement 1 of the method, case 1 of the switch statement, statement 0 of the
+case, and argument 0 of a method call (<span style="font-family:monospace">ExpressionStatement</span> is just a
+wrapper around an expression that can also be a statement).</p><p>The following is an example of an annotation file with AST paths used to specify
+where to insert casts.</p><pre class="verbatim">package p:
+annotation @A:
+
+class ASTPathExample:
+
+field a:
+    insert-typecast Variable.initializer, Binary.rightOperand: @A Integer
+
+method m()V:
+    insert-typecast Block.statement 0, Variable.initializer: @A Integer
+    insert-typecast Block.statement 1, Switch.case 1, Case.statement 0,
+        ExpressionStatement.expression, MethodInvocation.argument 0: @A Integer
+</pre><p>And the matching source code:</p><pre class="verbatim">package p;
+
+public class ASTPathExample {
+
+    private int a = 12 + 13;
+
+    public void m() {
+        int x = 1;
+        switch (x + 2) {
+            case 1:
+                System.out.println(1);
+                break;
+            case 2:
+                System.out.println(2 + x);
+                break;
+            default:
+                System.out.println(-1);
+        }
+    }
+}
+</pre><p>The following is the output, with the casts inserted.</p><pre class="verbatim">package p;
+import p.A;
+
+public class ASTPathExample {
+
+    private int a = 12 + ((@A Integer) (13));
+
+    public void m() {
+        int x = ((@A Integer) (1));
+        switch (x + 2) {
+            case 1:
+                System.out.println(1);
+                break;
+            case 2:
+                System.out.println(((@A Integer) (2 + x)));
+                break;
+            default:
+                System.out.println(-1);
+        }
+    }
+}
+</pre><p>Using <span style="font-family:monospace">insert-annotation</span> instead of <span style="font-family:monospace">insert-typecast</span> yields
+almost the same result &#X2014; it also inserts a cast. The sole difference
+is the inability to specify the type in the cast expression. If you use
+<span style="font-family:monospace">insert-annotation</span>, then the annotation inserter infers the type,
+which is <span style="font-family:monospace">int</span> in this case.</p><p>Note that a cast can be inserted on any expression, not
+just the deepest expression in the AST. For example, a cast could be inserted on
+the expression <span style="font-family:monospace">i + j</span>, the identifier <span style="font-family:monospace">i</span>, and/or the identifier <span style="font-family:monospace">j</span>.</p><p>To help create correct AST paths it may be useful to view the AST of a class.
+The Checker Framework has a processor to do this. The following command will
+output indented AST nodes for the entire input program.</p><pre class="verbatim">javac -processor org.checkerframework.common.util.debug.TreeDebug ASTPathExample.java
+</pre><p>The following is the grammar for AST paths.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>ast-path</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>ast-entry</em></span> [ &#X201C;<span style="font-weight:bold">,</span>&#X201D; <span style="font-family:sans-serif"><em>ast-entry</em></span> ]+ </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>ast-entry</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>annotated-type</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>annotation</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>array-access</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>array-type</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>assert</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>assignment</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>binary</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>block</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>case</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>catch</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>compound-assignment</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>conditional-expression</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>do-while-loop</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>enhanced-for-loop</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>expression-statement</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>for-loop</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>if</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>instance-of</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>intersection-type</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>labeled-statement</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>lambda-expression</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>member-reference</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>member-select</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>method-invocation</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>new-array</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>new-class</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>parameterized-type</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>parenthesized</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>return</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>switch</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>synchronized</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>throw</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>try</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>type-cast</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>type-parameter</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>unary</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>union-type</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>variable-type</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>while-loop</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| <span style="font-family:sans-serif"><em>wildcard-tree</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>annotated-type</em></span> :: = </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">AnnotatedType</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( ( &#X201C;<span style="font-weight:bold">annotation</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) | &#X201C;<span style="font-weight:bold">underlyingType</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>annotation</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Annotation</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">type</span>&#X201D; | &#X201C;<span style="font-weight:bold">argument</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>array-access</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">ArrayAccess</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">expression</span>&#X201D; | &#X201C;<span style="font-weight:bold">index</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>array-type</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">ArrayType</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; &#X201C;<span style="font-weight:bold">type</span>&#X201D; </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>assert</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Assert</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">condition</span>&#X201D; | &#X201C;<span style="font-weight:bold">detail</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>assignment</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Assignment</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">variable</span>&#X201D; | &#X201C;<span style="font-weight:bold">expression</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>binary</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Binary</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">leftOperand</span>&#X201D; | &#X201C;<span style="font-weight:bold">rightOperand</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>block</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Block</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; &#X201C;<span style="font-weight:bold">statement</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>case</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Case</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">expression</span>&#X201D; | ( &#X201C;<span style="font-weight:bold">statement</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>catch</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Catch</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">parameter</span>&#X201D; | &#X201C;<span style="font-weight:bold">block</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>compound-assignment</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">CompoundAssignment</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">variable</span>&#X201D; | &#X201C;<span style="font-weight:bold">expression</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>conditional-expression</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">ConditionalExpression</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">condition</span>&#X201D; | &#X201C;<span style="font-weight:bold">trueExpression</span>&#X201D; | &#X201C;<span style="font-weight:bold">falseExpression</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>do-while-loop</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">DoWhileLoop</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">condition</span>&#X201D; | &#X201C;<span style="font-weight:bold">statement</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>enhanced-for-loop</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">EnhancedForLoop</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">variable</span>&#X201D; | &#X201C;<span style="font-weight:bold">expression</span>&#X201D; | &#X201C;<span style="font-weight:bold">statement</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>expression-statement</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">ExpressionStatement</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; &#X201C;<span style="font-weight:bold">expression</span>&#X201D; </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>for-loop</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">ForLoop</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( ( &#X201C;<span style="font-weight:bold">initializer</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) | &#X201C;<span style="font-weight:bold">condition</span>&#X201D; | ( &#X201C;<span style="font-weight:bold">update</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) | &#X201C;<span style="font-weight:bold">statement</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>if</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">If</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">condition</span>&#X201D; | &#X201C;<span style="font-weight:bold">thenStatement</span>&#X201D; | &#X201C;<span style="font-weight:bold">elseStatement</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>instance-of</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">InstanceOf</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">expression</span>&#X201D; | &#X201C;<span style="font-weight:bold">type</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>intersection-type</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">IntersectionType</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; &#X201C;<span style="font-weight:bold">bound</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>labeled-statement</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">LabeledStatement</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; &#X201C;<span style="font-weight:bold">statement</span>&#X201D; </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>lambda-expression</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">LambdaExpression</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( ( &#X201C;<span style="font-weight:bold">parameter</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) | &#X201C;<span style="font-weight:bold">body</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>member-reference</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">MemberReference</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">qualifierExpression</span>&#X201D; | ( &#X201C;<span style="font-weight:bold">typeArgument</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>member-select</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">MemberSelect</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; &#X201C;<span style="font-weight:bold">expression</span>&#X201D; </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>method-invocation</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">MethodInvocation</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( ( &#X201C;<span style="font-weight:bold">typeArgument</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) | &#X201C;<span style="font-weight:bold">methodSelect</span>&#X201D; </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| ( &#X201C;<span style="font-weight:bold">argument</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>new-array</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">NewArray</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">type</span>&#X201D; | ( &#X201C;<span style="font-weight:bold">dimension</span>&#X201D; | &#X201C;<span style="font-weight:bold">initializer</span>&#X201D; ) <span style="font-family:sans-serif"><em>integer</em></span> ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>new-class</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">NewClass</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">enclosingExpression</span>&#X201D; | ( &#X201C;<span style="font-weight:bold">typeArgument</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) | &#X201C;<span style="font-weight:bold">identifier</span>&#X201D; </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| ( &#X201C;<span style="font-weight:bold">argument</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) | &#X201C;<span style="font-weight:bold">classBody</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>parameterized-type</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">ParameterizedType</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">type</span>&#X201D; | ( &#X201C;<span style="font-weight:bold">typeArgument</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>parenthesized</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Parenthesized</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; &#X201C;<span style="font-weight:bold">expression</span>&#X201D; </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>return</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Return</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; &#X201C;<span style="font-weight:bold">expression</span>&#X201D; </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>switch</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Switch</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">expression</span>&#X201D; | ( &#X201C;<span style="font-weight:bold">case</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>synchronized</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Synchronized</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">expression</span>&#X201D; | &#X201C;<span style="font-weight:bold">block</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>throw</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Throw</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; &#X201C;<span style="font-weight:bold">expression</span>&#X201D; </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>try</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Try</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">block</span>&#X201D; | ( &#X201C;<span style="font-weight:bold">catch</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) | &#X201C;<span style="font-weight:bold">finallyBlock</span>&#X201D; | ( &#X201C;<span style="font-weight:bold">resource</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ) ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>type-cast</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">TypeCast</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">type</span>&#X201D; | &#X201C;<span style="font-weight:bold">expression</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>type-parameter</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">TypeParameter</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; &#X201C;<span style="font-weight:bold">bound</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>unary</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Unary</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; &#X201C;<span style="font-weight:bold">expression</span>&#X201D; </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>union-type</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">UnionType</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; &#X201C;<span style="font-weight:bold">typeAlternative</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>variable</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Variable</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">type</span>&#X201D; | &#X201C;<span style="font-weight:bold">initializer</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>while-loop</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">WhileLoop</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; ( &#X201C;<span style="font-weight:bold">condition</span>&#X201D; | &#X201C;<span style="font-weight:bold">statement</span>&#X201D; ) </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>wildcard</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">Wildcard</span>&#X201D; &#X201C;<span style="font-weight:bold">.</span>&#X201D; &#X201C;<span style="font-weight:bold">bound</span>&#X201D; </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+</table>
+<!--TOC subsection id="annotations-grammar" Annotations-->
+<h3 id="annotations-grammar" class="subsection">2.4&#X2003;Annotations</h3><!--SEC END --><p>This section describes the details of how annotations are defined, how
+annotations are used, and the different kinds of annotations in an annotation
+file.</p>
+<!--TOC subsubsection id="annotation-definitions" Annotation definitions-->
+<h4 id="annotation-definitions" class="subsubsection">2.4.1&#X2003;Annotation definitions</h4><!--SEC END --><p>An annotation definition describes the annotation&#X2019;s fields and their
+types, so that they may be referenced in a compact way throughout the
+annotation file. Any annotation that is used in an annotation file
+must be defined before use.
+(This requirement makes it impossible to define, in an
+annotation file, an annotation that is meta-annotated with itself.)
+The two exceptions to this rule are the <span style="font-family:monospace">@java.lang.annotation.Target</span> and
+<span style="font-family:monospace">@java.lang.annotation.Retention</span> meta-annotations. These meta-annotations
+are often used in annotation definitions so for ease of use are they not required to
+be defined themselves.
+In the annotation file, the annotation definition appears within the
+package that defines the annotation. The annotation may be applied to
+elements of any package.</p><p>Note that these annotation definitions should not be confused with the
+<span style="font-family:monospace">@interface</span> syntax used in a Java source file to declare an annotation. An
+annotation definition in an annotation file is only used internally. An
+annotation definition in an annotation file will often mirror an
+<span style="font-family:monospace">@interface</span> annotation declaration in a Java source file in order to use
+that annotation in an annotation file.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>annotation-definition</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The <span style="font-family:sans-serif"><em>decl-annotation</em></span>s are the meta-annotations on this annotation. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">annotation</span>&#X201D; &#X201C;<span style="font-weight:bold">@</span>&#X201D;<span style="font-family:sans-serif"><em>name</em></span>
+&#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>decl-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>annotation-field-definition</em></span>* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>annotation-field-definition</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>annotation-field-type</em></span> <span style="font-family:sans-serif"><em>name</em></span> &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>annotation-field-type</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# <span style="font-family:sans-serif"><em>primitive-type</em></span> is any Java primitive type (<span style="font-family:monospace">int</span>, <span style="font-family:monospace">boolean</span>, etc.). </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# These are described in detail in Section&#X2004;&#X200D;<a href="#types-and-values">4</a>. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;(<span style="font-family:sans-serif"><em>primitive-type</em></span> | &#X201C;<span style="font-weight:bold">String</span>&#X201D; | &#X201C;<span style="font-weight:bold">Class</span>&#X201D;
+| (&#X201C;<span style="font-weight:bold">enum</span>&#X201D; <span style="font-family:sans-serif"><em>name</em></span>) | (&#X201C;<span style="font-weight:bold">annotation-field</span>&#X201D; <span style="font-family:sans-serif"><em>name</em></span>)) &#X201C;<span style="font-weight:bold">[]</span>&#X201D;? </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| &#X201C;<span style="font-weight:bold">unknown[]</span>&#X201D; &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+</table>
+<!--TOC subsubsection id="annotation-uses" Annotation uses-->
+<h4 id="annotation-uses" class="subsubsection">2.4.2&#X2003;Annotation uses</h4><!--SEC END --><p>Java SE 8 has two kinds of annotations: &#X201C;declaration annotations&#X201D; and &#X201C;type
+annotations&#X201D;. Declaration annotations can be written only on method formal
+parameters and the declarations of packages, classes, methods, fields, and local
+variables. Type annotations can be written on any use of a type, and on type
+parameter declarations. Type annotations must be meta-annotated
+with <span style="font-family:monospace">ElementType.TYPE_USE</span> and/or <span style="font-family:monospace">ElementType.TYPE_PARAMETER</span>.
+These meta-annotations are described in more detail in the JSR 308
+specification&#X2004;&#X200D;[<a href="#JSR308-webpage-201310">Ern13</a>].</p><p>The previous rules have used two productions for annotation uses in an
+annotation file: <span style="font-family:sans-serif"><em>decl-annotation</em></span> and <span style="font-family:sans-serif"><em>type-annotation</em></span>.
+The <span style="font-family:sans-serif"><em>decl-annotation</em></span> and <span style="font-family:sans-serif"><em>type-annotation</em></span> productions use the same
+syntax to specify an annotation. These two different rules exist only to show
+which type of annotation is valid in a given location. A declaration annotation
+must be used where the <span style="font-family:sans-serif"><em>decl-annotation</em></span> production is used and a type
+annotation must be used where the <span style="font-family:sans-serif"><em>type-annotation</em></span> production is used.</p><p>The syntax for an annotation is the same as in a Java source file.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>decl-annotation</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# <span style="font-family:sans-serif"><em>annotation</em></span> must be a declaration annotation. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>annotation</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>type-annotation</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# <span style="font-family:sans-serif"><em>annotation</em></span> must be a type annotation. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>annotation</em></span> </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>annotation</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The name may be the annotation&#X2019;s simple name, unless the file </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# contains definitions for two annotations with the same simple name. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# In this case, the fully-qualified name of the annotation name is required. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">@</span>&#X201D;<span style="font-family:sans-serif"><em>name</em></span> [ &#X201C;<span style="font-weight:bold">(</span>&#X201D; <span style="font-family:sans-serif"><em>annotation-field</em></span> [ &#X201C;<span style="font-weight:bold">,</span>&#X201D; <span style="font-family:sans-serif"><em>annotation-field</em></span> ]+ &#X201C;<span style="font-weight:bold">)</span>&#X201D; ] </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>annotation-field</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# In Java, if a single-field annotation has a field named </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# &#X201C;<span style="font-family:monospace">value</span>&#X201D;, then that field name may be elided in uses of the</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# annotation: &#X201C;<span style="font-family:monospace">@A(12)</span>&#X201D; rather than &#X201C;<span style="font-family:monospace">@A(value=12)</span>&#X201D;. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The same convention holds in an annotation file. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>name</em></span> &#X201C;<span style="font-weight:bold">=</span>&#X201D; <span style="font-family:sans-serif"><em>value</em></span>
+</td></tr>
+</table><p>Certain Java elements allow both declaration and type annotations (for example,
+formal method parameters). For these elements, the <span style="font-family:sans-serif"><em>type-annotations</em></span>
+rule is used to differentiate between the declaration annotations and the type
+annotations.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>type-annotations</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# holds the type annotations, as opposed to the declaration annotations. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">type:</span>&#X201D; <span style="font-family:sans-serif"><em>type-annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>compound-type</em></span>*
+</td></tr>
+</table>
+<!--TOC paragraph id="sec25" Compound type annotations-->
+<h4 id="sec25" class="paragraph">Compound type annotations</h4><!--SEC END --><p>A compound type is a parameterized, wildcard, array, or nested type. Annotations
+may be on any type in a compound type. In order to specify the location of an
+annotation within a compound type we use a &#X201C;type path&#X201D;. A
+type path is composed one or more pairs of type kind and type argument index.</p><table style="border:0;border-spacing:0" class="cellpadding0"><tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>type-kind</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">0</span>&#X201D; # annotation is deeper in this array type </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| &#X201C;<span style="font-weight:bold">1</span>&#X201D; # annotation is deeper in this nested type </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| &#X201C;<span style="font-weight:bold">2</span>&#X201D; # annotation is on the bound of this wildcard type argument </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;| &#X201C;<span style="font-weight:bold">3</span>&#X201D; # annotation is on the i&#X2019;th type argument of this parameterized type </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>type-path</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;# The <span style="font-family:sans-serif"><em>integer</em></span> is the type argument index. </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;<span style="font-family:sans-serif"><em>type-kind</em></span> &#X201C;<span style="font-weight:bold">,</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> [ &#X201C;<span style="font-weight:bold">,</span>&#X201D; <span style="font-family:sans-serif"><em>type-kind</em></span> &#X201C;<span style="font-weight:bold">,</span>&#X201D; <span style="font-family:sans-serif"><em>integer</em></span> ]* </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ></td></tr>
+<tr><td style="text-align:left;white-space:nowrap" ><span style="font-family:sans-serif"><em>compound-type</em></span> ::= </td></tr>
+<tr><td style="text-align:left;white-space:nowrap" >&#X2003;&#X2003;&#X201C;<span style="font-weight:bold">inner-type</span>&#X201D; <span style="font-family:sans-serif"><em>type-path</em></span> &#X201C;<span style="font-weight:bold">:</span>&#X201D; <span style="font-family:sans-serif"><em>annotation</em></span>* &#X201C;<span style="font-weight:bold">\n</span>&#X201D;</td></tr>
+</table><p>The type argument index used in the <span style="font-family:sans-serif"><em>type-path</em></span> rule must be &#X201C;<span style="font-weight:bold">0</span>&#X201D; unless the <span style="font-family:sans-serif"><em>type-kind</em></span> is
+&#X201C;<span style="font-weight:bold">3</span>&#X201D;. In this case, the type argument index selects which type argument
+of a parameterized type to use.</p><p>
+Type paths are explained in more detail, with many examples to ease
+understanding, in Section 3.4 of the JSR 308 Specification.<sup><a id="text1" href="#note1">1</a></sup></p>
+<!--TOC section id="example" Example-->
+<h2 id="example" class="section">3&#X2003;Example</h2><!--SEC END --><p>Consider the code of Figure&#X2004;&#X200D;<a href="#fig%3Ajava-example">1</a>.
+Figure&#X2004;&#X200D;<a href="#fig%3Aannotation-file-examples">2</a> shows two legal annotation files
+each of which represents its annotations.</p><blockquote class="figure"><div class="center"><hr class="floatrule"></div>
+<pre class="verbatim">package p1;
+
+import p2.*; // for the annotations @A through @D
+import java.util.*;
+
+public @A(12) class Foo {
+
+    public int bar;             // no annotation
+    private @B List&lt;@C String&gt; baz;
+
+    public Foo(@D("spam") Foo this, @B List&lt;@C String&gt; a) {
+        @B List&lt;@C String&gt; l = new LinkedList&lt;@C String&gt;();
+        l = (@B List&lt;@C String&gt;)l;
+    }
+}
+</pre>
+<div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 1: Example Java code with annotations.</td></tr>
+</table></div>
+<a id="fig:java-example"></a>
+<div class="center"><hr class="floatrule"></div></blockquote><blockquote class="figure"><div class="center"><hr class="floatrule"></div>
+<table border=1  style="border-spacing:0;" class="cellpadding1"><tr><td style="text-align:center;border:solid 1px;white-space:nowrap" ><div class="minipage">
+<pre class="verbatim">package p2:
+annotation @A:
+    int value
+annotation @B:
+annotation @C:
+annotation @D:
+    String value
+
+package p1:
+class Foo: @A(value=12)
+
+    field bar:
+
+    field baz: @B
+        inner-type 0: @C
+
+    method &lt;init&gt;(
+      Ljava/util/List;)V:
+        parameter 0: @B
+            inner-type 0: @C
+        receiver: @D(value="spam")
+        local 1 #3+5: @B
+            inner-type 0: @C
+        typecast #7: @B
+            inner-type 0: @C
+        new #0:
+            inner-type 0: @C
+</pre>
+</div></td><td style="text-align:center;border:solid 1px;white-space:nowrap" ><div class="minipage">
+<pre class="verbatim">package p2:
+annotation @A
+    int value
+
+package p2:
+annotation @B
+
+package p2:
+annotation @C
+
+package p2:
+annotation @D
+    String value
+
+package p1:
+class Foo: @A(value=12)
+
+package p1:
+class Foo:
+    field baz: @B
+
+package p1:
+class Foo:
+    field baz:
+        inner-type 0: @C
+
+// ... definitions for p1.Foo.&lt;init&gt;
+// omitted for brevity
+</pre>
+</div>
+</td></tr>
+</table><div class="caption"><table style="border-spacing:6px;border-collapse:separate;" class="cellpading0"><tr><td style="vertical-align:top;text-align:left;" >Figure 2: Two distinct annotation files each corresponding to the code of
+Figure&#X2004;&#X200D;<a href="#fig%3Ajava-example">1</a>.</td></tr>
+</table></div><p>
+<a id="fig:annotation-file-examples"></a>
+</p><div class="center"><hr class="floatrule"></div></blockquote>
+<!--TOC section id="types-and-values" Types and values-->
+<h2 id="types-and-values" class="section">4&#X2003;Types and values</h2><!--SEC END --><p>The Java language permits several types for annotation fields: primitives,
+<span style="font-family:monospace">String</span>s, <span style="font-family:monospace">java.lang.Class</span> tokens (possibly parameterized),
+enumeration constants, annotations, and one-dimensional arrays of these.</p><p>These <span style="font-weight:bold">types</span> are represented in an annotation file as follows:
+</p><ul class="itemize"><li class="li-itemize">
+Primitive: the name of the primitive type, such as <span style="font-family:monospace">boolean</span>.
+</li><li class="li-itemize">String: <span style="font-family:monospace">String</span>.
+</li><li class="li-itemize">Class token: <span style="font-family:monospace">Class</span>; the parameterization, if any, is not
+represented in annotation files.
+</li><li class="li-itemize">Enumeration constant: <span style="font-family:monospace">enum</span> followed by the binary name of
+the enumeration class, such as <span style="font-family:monospace">enum java.lang.Thread$State</span>.
+</li><li class="li-itemize">Annotation: <span style="font-family:monospace">@</span> followed by the binary name of the annotation type.
+</li><li class="li-itemize">Array: The representation of the element type followed by <span style="font-family:monospace">[]</span>, such
+as <span style="font-family:monospace">String[]</span>, with one exception: an annotation definition may specify
+a field type as <span style="font-family:monospace">unknown[]</span> if, in all occurrences of that annotation in
+the annotation file, the field value is a zero-length array.<sup><a id="text2" href="#note2">2</a></sup>
+</li></ul><p>Annotation field <span style="font-weight:bold">values</span> are represented in an annotation file as follows:
+</p><ul class="itemize"><li class="li-itemize">
+Numeric primitive value: literals as they would appear in Java source
+code.
+</li><li class="li-itemize">Boolean: <span style="font-family:monospace">true</span> or <span style="font-family:monospace">false</span>.
+</li><li class="li-itemize">Character: A single character or escape sequence in single quotes, such
+as <span style="font-family:monospace">&#X2019;A&#X2019;</span> or <span style="font-family:monospace">&#X2019;\&#X2019;&#X2019;</span>.
+</li><li class="li-itemize">String: A string literal as it would appear in source code, such as
+<span style="font-family:monospace">"\"Yields falsehood when quined\" yields falsehood when quined."</span>.
+</li><li class="li-itemize">Class token: The binary name of the class (using <span style="font-family:monospace">$</span> for
+inner classes) or the name of the primitive type or <span style="font-family:monospace">void</span>, possibly
+followed by <span style="font-family:monospace">[]</span>s representing array layers, followed by <span style="font-family:monospace">.class</span>.
+Examples: <span style="font-family:monospace">java.lang.Integer[].class</span>, <span style="font-family:monospace">java.util.Map$Entry.class</span>,
+and <span style="font-family:monospace">int.class</span>.
+</li><li class="li-itemize">Enumeration constant: the name of the enumeration constant, such as
+<span style="font-family:monospace">RUNNABLE</span>.
+</li><li class="li-itemize">Array: a sequence of elements inside <span style="font-family:monospace">{}</span> with a comma
+between each pair of adjacent elements; a comma following the last element is
+optional as in Java. Also as in Java, the braces may be omitted if the
+array has only one element.
+Examples: <span style="font-family:monospace">{1}</span>, <span style="font-family:monospace">1</span>,
+<span style="font-family:monospace">{true, false,}</span> and <span style="font-family:monospace">{}</span>.
+</li></ul><p>The following example annotation file shows how types and values are represented.</p><pre class="verbatim">package p1:
+
+annotation @ClassInfo:
+    String remark
+    Class favoriteClass
+    Class favoriteCollection // it's probably Class&lt;? extends Collection&gt;
+                             // in source, but no parameterization here
+    char favoriteLetter
+    boolean isBuggy
+    enum p1.DebugCategory[] defaultDebugCategories
+    @p1.CommitInfo lastCommit
+
+annotation @CommitInfo:
+    byte[] hashCode
+    int unixTime
+    String author
+    String message
+
+class Foo: @p1.ClassInfo(
+    remark="Anything named \"Foo\" is bound to be good!",
+    favoriteClass=java.lang.reflect.Proxy.class,
+    favoriteCollection=java.util.LinkedHashSet.class,
+    favoriteLetter='F',
+    isBuggy=true,
+    defaultDebugCategories={DEBUG_TRAVERSAL, DEBUG_STORES, DEBUG_IO},
+    lastCommit=@p1.CommitInfo(
+        hashCode={31, 41, 59, 26, 53, 58, 97, 92, 32, 38, 46, 26, 43, 38, 32, 79},
+        unixTime=1152109350,
+        author="Joe Programmer",
+        message="First implementation of Foo"
+    )
+)
+</pre>
+<!--TOC section id="alternative-formats" Alternative formats-->
+<h2 id="alternative-formats" class="section">5&#X2003;Alternative formats</h2><!--SEC END --><p>We mention multiple alternatives to the format described in this document.
+Each of them has its own merits.
+In the future, the other formats could be implemented, along with tools for
+converting among them.
+</p><p>An alternative to the format described in this document would be XML.
+XML does not seem to provide any compelling advantages. Programmers
+interact with annotation files in two ways: textually (when reading, writing,
+and editing annotation files) and programmatically (when writing
+annotation-processing tools). Textually, XML can be
+very hard to read; style sheets mitigate this
+problem, but editing XML files remains tedious and error-prone.
+Programmatically, a layer of abstraction (an API) is needed in any event, so it
+makes little difference what the underlying textual representation is.
+XML files are easier to parse, but the parsing code only needs to be
+written once and is abstracted away by an API to the data structure.</p><p>Another alternative is a format like the <span style="font-family:monospace">.spec</span>/<span style="font-family:monospace">.jml</span> files
+of JML&#X2004;&#X200D;[<a href="#LeavensBR2006%3AJML">LBR06</a>]. The format is similar to Java code, but
+all method bodies are empty, and users can annotate the public members of a
+class. This is easy for Java programmers to read and understand. (It is a
+bit more complex to implement, but that is not particularly germane.)
+Because it does not permit complete specification of a class&#X2019;s annotations
+(it does not permit annotation of method bodies), it is not appropriate for
+certain tools, such as type inference tools. However, it might be desirable
+to adopt such a format for public members, and to use the format
+described in this document primarily for method bodies.</p><p>The Checker Framework&#X2004;&#X200D;[<a href="#DietlDEMS2011">DDE+11</a>, <a href="#CF">Che</a>] defines a format
+called &#X201C;stub files&#X201D;. A stub file is similar
+to the <span style="font-family:monospace">.spec</span>/<span style="font-family:monospace">.jml</span> files described in the previous paragraph. It
+uses Java syntax, only allows annotations on method signatures and does not require
+method bodies. A stub file is used to add annotations to method signatures of
+existing Java classes. For example, the Checker Framework uses stub files to add
+annotations to method signatures of libraries (such as the JDK) without modifying
+the source code or bytecode of the library. A single stub file can contain
+multiple packages and classes. This format only allows annotations on method
+signatures, not class signatures, fields, and method bodies like in a <span style="font-family:monospace">.jaif</span>
+file. Further, stub files are only used by the Checker Framework at run time,
+they cannot be used to insert annotations into a source or classfile.</p><p>Eclipse defines its own file format for external nullness annotations:
+<a href="https://wiki.eclipse.org/JDT_Core/Null_Analysis/External_Annotations#File_format"><span style="font-family:monospace">https://wiki.eclipse.org/JDT_Core/Null_Analysis/External_Annotations#File_format</span></a>.
+It works only for nullness annotations. It is more compact but less
+readable than the Annotation File Format. It is intended for tool use, not
+for editing by ordinary users, who are expected to interact with it
+via the Eclipse GUI.</p><!--TOC section id="sec29" References-->
+<h2 id="sec29" class="section">References</h2><!--SEC END --><dl class="thebibliography"><dt class="dt-thebibliography">
+<a id="CF">[Che]</a></dt><dd class="dd-thebibliography">
+Checker Framework website.
+<a href="https://checkerframework.org/"><span style="font-family:monospace">https://checkerframework.org/</span></a>.</dd><dt class="dt-thebibliography"><a id="DietlDEMS2011">[DDE<sup>+</sup>11]</a></dt><dd class="dd-thebibliography">
+Werner Dietl, Stephanie Dietzel, Michael&#X2004;&#X200D;D. Ernst, K&#X131;van&#XE7; Mu&#X15F;lu,
+and Todd Schiller.
+Building and using pluggable type-checkers.
+In <em>ICSE 2011, Proceedings of the 33rd International Conference
+on Software Engineering</em>, pages 681&#X2013;690, Waikiki, Hawaii, USA, May 2011.</dd><dt class="dt-thebibliography"><a id="JSR308-webpage-201310">[Ern13]</a></dt><dd class="dd-thebibliography">
+Michael&#X2004;&#X200D;D. Ernst.
+Type Annotations specification (JSR 308).
+<a href="https://checkerframework.org/jsr308/"><span style="font-family:monospace">https://checkerframework.org/jsr308/</span></a>, October 2013.</dd><dt class="dt-thebibliography"><a id="LeavensBR2006:JML">[LBR06]</a></dt><dd class="dd-thebibliography">
+Gary&#X2004;&#X200D;T. Leavens, Albert&#X2004;&#X200D;L. Baker, and Clyde Ruby.
+Preliminary design of JML: A behavioral interface specification
+language for Java.
+<em>ACM SIGSOFT Software Engineering Notes</em>, 31(3), March 2006.</dd></dl><!--BEGIN NOTES document-->
+<hr class="footnoterule"><dl class="thefootnotes"><dt class="dt-thefootnotes">
+<a id="note1" href="#text1">1</a></dt><dd class="dd-thefootnotes"><div class="footnotetext"><a href="https://checkerframework.org/jsr308/specification/java-annotation-design.html#class-file:ext:type_path"><span style="font-family:monospace">https://checkerframework.org/jsr308/specification/java-annotation-design.html#class-file:ext:type_path</span></a></div></dd><dt class="dt-thefootnotes"><a id="note2" href="#text2">2</a></dt><dd class="dd-thefootnotes"><div class="footnotetext">There is a design flaw in the format of array field values in a
+class file. An array does not itself specify an element type; instead, each
+element specifies its type. If the annotation type <span style="font-family:monospace">X</span> has an array field
+<span style="font-family:monospace">arr</span> but <span style="font-family:monospace">arr</span> is zero-length in every <span style="font-family:monospace">@X</span> annotation in the
+class file, there is no way to determine the element type of <span style="font-family:monospace">arr</span> from the
+class file. This exception makes it possible to define <span style="font-family:monospace">X</span> when the class
+file is converted to an annotation file.</div></dd></dl>
+<!--END NOTES-->
+<!--CUT END -->
+<!--HTMLFOOT-->
+<!--ENDHTML-->
+</body>
+</html>
