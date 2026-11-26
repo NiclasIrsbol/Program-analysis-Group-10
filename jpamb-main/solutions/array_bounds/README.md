@@ -97,12 +97,3 @@ uv run --project solutions\array_bounds --no-sync python -m unittest discover -s
 This includes interpreter behavior, interval soundness, difference-bound
 operations, and evaluation/replay inventory checks. These tests use fixtures
 and source files, so they do not require the JPAMB build step above.
-
-## Environment note
-
-The `VIRTUAL_ENV` warning means the active environment differs from the
-project environment at `solutions\array_bounds\.venv`. It is not itself a
-test or evaluation failure. The build command explicitly uses the active root
-environment; evaluation and test commands use the array-bounds project
-environment. Add `--active` to those commands only if you intend to use the
-already-active environment instead.
