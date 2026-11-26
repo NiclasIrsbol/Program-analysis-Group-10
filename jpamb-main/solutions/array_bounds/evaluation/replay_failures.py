@@ -4,8 +4,8 @@ import csv
 import subprocess
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-CLASSES = ROOT / "target" / "external-comparison-classes"
+ROOT = Path(__file__).resolve().parents[3]
+CLASSES = ROOT / "target" / "classes"
 OUT = Path(__file__).resolve().parent / "evaluation-results"
 
 FAILURES = [
@@ -33,10 +33,20 @@ def replay(methodid, inputs):
     command.extend(input_text for input_text in inputs if input_text)
     result = subprocess.run(command, capture_output=True, text=True, check=False)
     stdout = result.stdout.strip()
-    return stdout or ("process error" if result.returncode else "no outcome")
+    if stdout:
+        return stdout
+    stderr = result.stderr.strip()
+    if stderr:
+        return stderr
+    return f"process exited with code {result.returncode}" if result.returncode else "no outcome"
 
 
 def main():
+    if not CLASSES.is_dir():
+        raise FileNotFoundError(
+            f"Compiled JPAMB classes not found at {CLASSES}. "
+            "Build the project before replaying JVM cases."
+        )
     OUT.mkdir(parents=True, exist_ok=True)
     rows = []
     for methodid, inputs in FAILURES:

@@ -9,8 +9,10 @@ import subprocess
 import time
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
+SRC = HERE.parent / "src"
+CLASSES = ROOT / "target" / "classes"
 METHOD_RE = re.compile(r"public static [^\n{]+ ([A-Za-z_][A-Za-z0-9]*)\s*\(")
 
 
@@ -97,9 +99,15 @@ def checker_framework(checker_root, sources, out):
     return warnings, runtime, process.returncode
 
 
-def jbmc(jbmc_executable, methods, out, unwind=20):
+def jbmc(jbmc_executable, methods, out, classes, unwind=20):
     if not jbmc_executable:
         return [], None
+
+    if not classes.is_dir():
+        raise FileNotFoundError(
+            f"Compiled JPAMB classes not found at {classes}. "
+            "Build the project before running JBMC."
+        )
 
     docker_mode = jbmc_executable == "docker"
     if docker_mode:
@@ -112,7 +120,7 @@ def jbmc(jbmc_executable, methods, out, unwind=20):
     rows = []
     for methodid in methods:
         if docker_mode:
-            classes = str(ROOT / "target" / "external-comparison-classes")
+            classes_path = str(classes)
             inner = (
                 "cd /mnt/classes && jbmc "
                 f"'{methodid}' --cp /mnt/classes --unwind {unwind}"
@@ -122,7 +130,7 @@ def jbmc(jbmc_executable, methods, out, unwind=20):
                 "run",
                 "--rm",
                 "--mount",
-                f"type=bind,source={classes},target=/mnt/classes,readonly",
+                f"type=bind,source={classes_path},target=/mnt/classes,readonly",
                 "ghcr.io/diffblue/cbmc:6.11.0",
                 "sh",
                 "-lc",
@@ -133,7 +141,7 @@ def jbmc(jbmc_executable, methods, out, unwind=20):
                 executable,
                 methodid,
                 "--cp",
-                str(ROOT / "target" / "external-comparison-classes"),
+                str(classes),
                 "--unwind",
                 str(unwind),
             ]
@@ -159,15 +167,7 @@ def jbmc(jbmc_executable, methods, out, unwind=20):
             {
                 "tool": "jbmc",
                 "method": methodid,
-                "label": next(
-                    (
-                        "null" if "null" in types else
-                        "faulty" if "faulty" in types else "safe"
-                        for current, types in methods.items()
-                        if current == methodid
-                    ),
-                    "",
-                ),
+                "label": methods.get(methodid, ""),
                 "result": result,
                 "bound_properties": len(bound_lines),
                 "successes": len(successes),
@@ -214,12 +214,20 @@ def main(argv=None):
             ROOT / "cases" / "jpamb" / "cases" / "ArrayBoundsProject.java",
         ],
     )
-    parser.add_argument("--labels", type=Path, default=HERE / "labels.csv")
+    parser.add_argument("--labels", type=Path, default=SRC / "labels.csv")
     parser.add_argument("--out", type=Path, default=HERE / "external-tools-results")
     parser.add_argument("--jbmc", default=None)
+    parser.add_argument("--classes", type=Path, default=CLASSES)
     parser.add_argument("--unwind", type=int, default=20)
     args = parser.parse_args(argv)
+    args.classes = args.classes.resolve()
     args.out.mkdir(parents=True, exist_ok=True)
+
+    if not args.classes.is_dir():
+        raise FileNotFoundError(
+            f"Compiled JPAMB classes not found at {args.classes}. "
+            "Build the project before comparing external tools."
+        )
 
     labels = read_labels(args.labels)
     methods = labelled_methods(labels)
@@ -317,7 +325,9 @@ def main(argv=None):
         f"{checker_runtime:.3f}s"
     )
 
-    jbmc_rows, _ = jbmc(args.jbmc, methods, args.out, args.unwind)
+    jbmc_rows, _ = jbmc(
+        args.jbmc, methods, args.out, args.classes, args.unwind
+    )
     if jbmc_rows:
         with open(args.out / "jbmc_results.csv", "w", newline="", encoding="utf-8") as file:
             writer = csv.DictWriter(file, fieldnames=list(jbmc_rows[0]))

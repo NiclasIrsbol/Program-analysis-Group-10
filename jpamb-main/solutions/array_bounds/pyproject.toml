@@ -17,14 +17,21 @@ dependencies = [
 [project.scripts]
 array-bounds-interpreter = "interpreter:interpret"
 array-bounds-analysis = "interpreter:analyse"
+array-bounds-evaluate = "array_bounds_evaluation.evaluate:main"
+array-bounds-syntactic-evaluate = "array_bounds_evaluation.syntactic_evaluate:main"
+array-bounds-external-tools-evaluate = "array_bounds_evaluation.external_tools_evaluate:main"
+array-bounds-replay-failures = "array_bounds_evaluation.replay_failures:main"
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = {"" = "src", "array_bounds_evaluation" = "evaluation"}
+packages = ["array_bounds_evaluation"]
 py-modules = [
     "abstractions",
     "interval",
     "difference_bounds",
+    "guard_facts",
     "interpreter",
+    "syntactic",
 ]
 
 [tool.uv.sources]

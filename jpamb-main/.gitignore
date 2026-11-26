@@ -1,12 +1,10 @@
-target/generated-sources/
-target/maven-status/
-target/test-classes/
 .jdtls
 .metadata
 .classpath
 .project
 .settings
 __pycache__
+target/
 
 result.json
 .venv
