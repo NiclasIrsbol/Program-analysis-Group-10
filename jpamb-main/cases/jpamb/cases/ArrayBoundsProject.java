@@ -7,11 +7,11 @@ import jpamb.utils.*;
 public class ArrayBoundsProject {
 
   /*
-  * Each safe/unsafe pair isolates a different question:
+  * Each pair isolates a different relational question:
   *
-  * 1. Array aliasing:
-  *    Can a bounds check on one array be used for an alias of that array,
-  *    and is that relation invalidated when the alias is reassigned?
+  * 1. Transitive bounds:
+  *    Can the analysis combine relations such as i <= j and
+  *    j < array.length to prove that i is also in bounds?
   *
   * 2. Off-by-one bounds:
   *    Can the analysis distinguish i < array.length from
@@ -19,63 +19,60 @@ public class ArrayBoundsProject {
   *
   * 3. Difference relations:
   *    Can the analysis use a fixed relation between two indices,
-  *    such as j - i = 2, to prove an array access safe?
+  *    such as j - i = 2, to prove an access safe?
   *
   * 4. Array reassignment:
   *    Does a relation between an index and array.length become invalid
-  *    when the array is replaced with a different-sized array?
+  *    when the array is replaced by a differently sized array?
   *
   * 5. Derived indices:
-  *    Can the analysis propagate bounds through relations such as
+  *    Can the analysis propagate bounds through assignments such as
   *    j = i + 1?
   *
   * 6. Relations between array lengths:
-  *    Can the analysis reason about the lengths of two arrays, and
-  *    invalidate that relation when one array is reassigned?
+  *    Can the analysis reason about the lengths of two arrays and
+  *    invalidate that relation when one array changes?
   *
   * 7. Copied array lengths:
-  *    Can the analysis relate a variable containing array.length back
-  *    to the array, and detect when that copied length becomes stale?
+  *    Can the analysis relate a variable storing array.length back to
+  *    the array, and detect when that copied length becomes stale?
   *
   * 8. Control-flow joins:
   *    Can the analysis merge information from multiple branches while
-  *    keeping only relations that are valid on every incoming path?
+  *    keeping only relations that hold on every incoming path?
   *
   * 9. Nested refinement:
   *    Can relational facts learned in an outer branch be combined with
   *    facts learned in an inner branch to prove an access safe?
   *
   * 10. Index equality:
-  *     Can bounds information be transferred between equal index variables,
-  *     and is that equality invalidated when one variable changes?
-  *
+  *     Can bounds information be transferred between equal index
+  *     variables, and is that relation invalidated when one changes?
   */
 
-  // Pair 1: Array alias relation vs broken alias relation
+  // Pair 1: Transitive relation between two indices and array length
 
-  @Case("(2) -> ok")
+  @Case("(1, 2) -> ok")
+  @Case("(2, 3) -> ok")
   @Tag({ARRAY})
-  public static int safeArrayAlias(int i) {
-    int[] a = {10, 20, 30, 40};
-    int[] b = a;
+  public static int safeTransitiveBound(int i, int j) {
+    int[] array = {10, 20, 30, 40};
 
-    if (i >= 0 && i < a.length) {
-      return b[i];
+    if (i >= 0 && i <= j && j < array.length) {
+      return array[i];
     }
 
     return 0;
   }
 
-  @Case("(1) -> ok")
-  @Case("(2) -> out of bounds")
+  @Case("(2, 1) -> ok")
+  @Case("(4, 3) -> out of bounds")
   @Tag({ARRAY})
-  public static int unsafeArrayAlias(int i) {
-    int[] a = {10, 20, 30, 40};
-    int[] b = a;
+  public static int unsafeTransitiveBound(int i, int j) {
+    int[] array = {10, 20, 30, 40};
 
-    if (i >= 0 && i < a.length) {
-      b = new int[2];
-      return b[i];
+    if (i >= 0 && j < array.length && j <= i) {
+      return array[i];
     }
 
     return 0;
