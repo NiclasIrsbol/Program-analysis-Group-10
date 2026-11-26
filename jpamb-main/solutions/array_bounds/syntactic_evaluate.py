@@ -4,6 +4,7 @@ import argparse
 import csv
 import importlib
 import json
+import logging
 import sys
 import time
 from pathlib import Path
@@ -16,7 +17,9 @@ SRC = Path(__file__).resolve().parent / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-analyse_source = importlib.import_module("syntactic").analyse_source
+syntactic_module = importlib.import_module("syntactic")
+analyse_source = syntactic_module.analyse_source
+SourceMethodNotFoundError = syntactic_module.SourceMethodNotFoundError
 
 
 def source_file(methodid):
@@ -24,9 +27,16 @@ def source_file(methodid):
     return ROOT / "cases" / Path(*classname.packages) / f"{classname.name}.java"
 
 
-def syntactic_verdicts(methodid):
+def syntactic_verdicts(methodid) -> list[str] | None:
     decoded = jvm.AbsMethodID.decode(methodid)
-    results = analyse_source(source_file(methodid), decoded)
+    try:
+        results = analyse_source(source_file(methodid), decoded)
+    except SourceMethodNotFoundError:
+        logging.getLogger(__name__).warning(
+            "%s has no matching source declaration; recording its accesses as UNKNOWN",
+            methodid,
+        )
+        return None
     return ["SAFE" if result == "guarded" else "UNKNOWN" for result in results]
 
 
@@ -73,14 +83,17 @@ def main(argv=None):
         syntactic = last_syntactic[methodid]
         if not dbm_accesses:
             continue
-        if len(syntactic) > len(dbm_accesses):
-            raise RuntimeError(
-                f"{methodid}: syntactic found {len(syntactic)} accesses, "
-                f"but labels contain {len(dbm_accesses)} labelled accesses"
-            )
-        # The bytecode analyser reports array-initialiser stores, while the
-        # source analyser reports only Java array-access expressions.
-        syntactic = ["SAFE"] * (len(dbm_accesses) - len(syntactic)) + syntactic
+        if syntactic is None:
+            syntactic = ["UNKNOWN"] * len(dbm_accesses)
+        else:
+            if len(syntactic) > len(dbm_accesses):
+                raise RuntimeError(
+                    f"{methodid}: syntactic found {len(syntactic)} accesses, "
+                    f"but labels contain {len(dbm_accesses)} labelled accesses"
+                )
+            # The bytecode analyser reports array-initialiser stores, while the
+            # source analyser reports only Java array-access expressions.
+            syntactic = ["SAFE"] * (len(dbm_accesses) - len(syntactic)) + syntactic
 
         for ordinal, (access, syntactic_verdict) in enumerate(
             zip(dbm_accesses, syntactic)

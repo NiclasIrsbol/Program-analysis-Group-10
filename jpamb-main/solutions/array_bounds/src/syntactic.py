@@ -9,6 +9,10 @@ import tree_sitter_java
 import jpamb
 
 
+class SourceMethodNotFoundError(ValueError):
+    """Raised when a bytecode method has no matching Java source declaration."""
+
+
 def analyse_source(source, methodid):
     """Return one syntactic verdict for each array access in ``methodid``."""
     log = logging.getLogger(__name__)
@@ -51,7 +55,8 @@ def analyse_source(source, methodid):
     """,
     )
 
-    for snode in tree_sitter.QueryCursor(method_q).captures(node)["method"]:
+    method_nodes = tree_sitter.QueryCursor(method_q).captures(node).get("method", [])
+    for snode in method_nodes:
         if not (p := snode.child_by_field_name("parameters")):
             log.debug(f"Could not find parameteres of {method_name}")
             continue
@@ -73,7 +78,7 @@ def analyse_source(source, methodid):
         else:
             break
     else:
-        raise ValueError(
+        raise SourceMethodNotFoundError(
             f"could not find method {method_name} in {simple_classname}"
         )
 
