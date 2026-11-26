@@ -1,3 +1,0 @@
-tool,methods,safe_labelled,false_warnings,false_warning_rate,faulty_labelled,detected,detection_rate,unknown,runtime_s
-checker-framework,32,18,4,0.222,14,7,0.500,0,24.104850
-jbmc,32,18,0,0.000,14,0,0.000,33,0.206220

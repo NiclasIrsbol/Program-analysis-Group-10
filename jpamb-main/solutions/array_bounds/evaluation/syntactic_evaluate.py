@@ -16,6 +16,7 @@ if __package__:
         analyse_method,
         create_bytecode,
         discover,
+        labels_for_accesses,
         read_labels,
         write_csv,
     )
@@ -26,6 +27,7 @@ else:
         analyse_method,
         create_bytecode,
         discover,
+        labels_for_accesses,
         read_labels,
         write_csv,
     )
@@ -85,10 +87,13 @@ def main(argv=None):
     rows = []
     for methodid in methods:
         analysis, accesses = last_dbm[methodid]
+        access_labels = labels_for_accesses(
+            bytecode, methodid, accesses, labels
+        )
         dbm_accesses = [
             (offset, verdict)
             for offset, verdict in sorted(accesses.items())
-            if (methodid, offset) in labels
+            if offset in access_labels
         ]
         if not dbm_accesses:
             continue
@@ -113,7 +118,7 @@ def main(argv=None):
                     "method": methodid,
                     "index": offset,
                     "ordinal": ordinal,
-                    "label": labels[(methodid, offset)],
+                    "label": access_labels[offset],
                     "syntactic_verdict": syntactic_verdict,
                     "dbm_verdict": verdict.upper(),
                     "unresolved_reason": analysis.reason or "",

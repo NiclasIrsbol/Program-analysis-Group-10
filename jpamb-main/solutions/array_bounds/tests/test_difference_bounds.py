@@ -2,7 +2,7 @@ import itertools
 import unittest
 from math import inf
 
-from solutions.array_bounds.difference_bounds import INT_MAX, INT_MIN, DifferenceBounds
+from difference_bounds import INT_MAX, INT_MIN, DifferenceBounds
 
 
 def contains(state, values):

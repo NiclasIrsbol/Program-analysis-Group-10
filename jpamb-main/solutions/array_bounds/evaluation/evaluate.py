@@ -87,8 +87,37 @@ def read_labels(path):
     labels = {}
     with open(path, newline="", encoding="utf-8") as file:
         for row in csv.DictReader(file):
-            labels[(row["method"], int(row["index"]))] = row["label"].strip()
+            index = row["index"].strip()
+            labels[(row["method"], None if index == "*" else int(index))] = (
+                row["label"].strip()
+            )
     return labels
+
+
+def labels_for_accesses(bytecode, methodid, accesses, labels):
+    """Resolve exact access labels and method-level fallbacks for array reads."""
+    fallback = labels.get((methodid, None))
+    opcodes = {}
+    if fallback is not None:
+        decoded = jvm.AbsMethodID.decode(methodid)
+        raw_method = bytecode.suite.findmethod(decoded, eff=bytecode.eff)
+        opcodes = {
+            instruction["offset"]: jvm.Opcode.from_json(instruction)
+            for instruction in raw_method["code"]["bytecode"]
+        }
+
+    resolved = {}
+    for offset in accesses:
+        label = labels.get((methodid, offset))
+        if label is None and fallback is not None:
+            opcode = opcodes.get(offset)
+            if isinstance(opcode, jvm.ArrayLoad):
+                label = fallback
+            elif isinstance(opcode, jvm.ArrayStore):
+                label = "safe"
+        if label is not None:
+            resolved[offset] = label
+    return resolved
 
 
 def create_bytecode(root=ROOT):
@@ -168,6 +197,9 @@ def main(argv=None):
         null_labelled = 0
         abstract_states = steps = rel_state_size = accesses_count = 0
         for methodid, (analysis, accesses) in latest.items():
+            access_labels = labels_for_accesses(
+                bytecode, methodid, accesses, labels
+            )
             abstract_states += len(analysis.states)
             steps += analysis.steps
             for state in analysis.states.values():
@@ -179,7 +211,7 @@ def main(argv=None):
                     )
 
             for offset, verdict in sorted(accesses.items()):
-                label = labels.get((methodid, offset), "")
+                label = access_labels.get(offset, "")
                 accesses_count += 1
                 access_rows.append(
                     {

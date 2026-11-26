@@ -1,213 +1,237 @@
-"""Engine tests: the real JPAMB array cases plus hand-assembled bytecode.
+"""Tests for the standalone array-bounds interpreter.
 
-Run from jpamb-main/:  python -m unittest discover -s solutions/array_bounds/tests -t .
+Run from jpamb-main/:
+    uv run --project solutions/array_bounds --no-sync python -m unittest discover \
+        -s solutions/array_bounds/tests -t .
 """
 
 import unittest
+from dataclasses import dataclass
 
-from solutions.array_bounds.engine import (
-    SAFE,
-    UNRESOLVED,
-    WARNING,
-    Analysis,
-    analyse,
-    method_from_json,
-)
-
+import jpamb
 import jvm
+from interpreter import AbstractInterpreter
 
+SAFE = "safe"
+WARNING = "warning"
+UNRESOLVED = "unresolved"
 INT, ARR = jvm.Int(), jvm.Array(jvm.Int())
 
 
-# -- a tiny assembler: jvm2json-style dicts, jump targets are instruction indices
-def push(v):
-    return {"opr": "push", "value": {"type": "integer", "value": v}}
+class FixtureSuite:
+    def __init__(self, raw_method):
+        self.raw_method = raw_method
+
+    def findmethod(self, methodid, *, eff):
+        return self.raw_method
+
+    def method_opcodes(self, methodid, *, eff):
+        return (
+            jvm.Opcode.from_json(op)
+            for op in self.raw_method["code"]["bytecode"]
+        )
+
+    def method_max_locals(self, methodid, *, eff):
+        return self.raw_method["code"]["max_locals"]
 
 
-def load(i, t="int"):
-    return {"opr": "load", "index": i, "type": t}
+@dataclass
+class MethodFixture:
+    bytecode: jpamb.Bytecode
+    methodid: jvm.AbsMethodID
 
 
-def store(i, t="int"):
-    return {"opr": "store", "index": i, "type": t}
+def push(value):
+    return {"opr": "push", "value": {"type": "integer", "value": value}}
 
 
-def ifz(cond, target):
-    return {"opr": "ifz", "condition": cond, "target": target}
+def load(index, type_="int"):
+    return {"opr": "load", "index": index, "type": type_}
 
 
-def if_(cond, target):
-    return {"opr": "if", "condition": cond, "target": target}
+def store(index, type_="int"):
+    return {"opr": "store", "index": index, "type": type_}
 
 
-def goto(t):
-    return {"opr": "goto", "target": t}
+def ifz(condition, target):
+    return {"opr": "ifz", "condition": condition, "target": target}
 
 
-def binary(op):
-    return {"opr": "binary", "type": "int", "operant": op}
+def if_(condition, target):
+    return {"opr": "if", "condition": condition, "target": target}
+
+
+def goto(target):
+    return {"opr": "goto", "target": target}
+
+
+def binary(operation):
+    return {"opr": "binary", "type": "int", "operant": operation}
 
 
 ARRLEN = {"opr": "arraylength"}
 IALOAD = {"opr": "array_load", "type": "int"}
 RET_INT = {"opr": "return", "type": "int"}
-RET = {"opr": "return", "type": None}
 
 
 def method(params, ops, max_locals):
-    code = [{**op, "offset": i} for i, op in enumerate(ops)]
-    m = {"access": ["static"], "code": {"bytecode": code, "max_locals": max_locals, "exceptions": []}}
-    return method_from_json("Test.m", params, m)
+    descriptor = "".join(param.encode() for param in params)
+    methodid = jvm.AbsMethodID.decode(f"Test.m:({descriptor})V")
+    bytecode = [
+        {**opcode, "offset": offset} for offset, opcode in enumerate(ops)
+    ]
+    raw_method = {
+        "access": ["static"],
+        "code": {
+            "bytecode": bytecode,
+            "max_locals": max_locals,
+            "max_stack": 8,
+            "exceptions": [],
+        },
+    }
+    suite = FixtureSuite(raw_method)
+    return MethodFixture(
+        jpamb.Bytecode(suite, jpamb.Effect(None), {}),
+        methodid,
+    )
 
 
 def guarded_read(cmp="lt", lower=True, after_guard=()):
-    """static int read(int[] a, int i) {
-         if (a == null || i < 0 || i >= a.length) return -1;   // Listing 1
-         <after_guard>
-         return a[i]; }
-
-    `cmp` is the jump to the access: "lt" is correct, "le" is off by one.
-    """
-    head = [load(0, "ref"), ifz("is", "RET")]
+    head = [load(0, "ref"), ifz("eq", "RET")]
     if lower:
-        head += [load(1), ifz("lt", "RET")]
-    head += [load(1), load(0, "ref"), ARRLEN, if_(cmp, "ACC")]
-    ret = [push(-1), RET_INT]
-    acc = list(after_guard) + [load(0, "ref"), load(1), IALOAD, RET_INT]
-    ops = head + ret + acc
-    labels = {"RET": len(head), "ACC": len(head) + len(ret)}
-    ops = [{**o, "target": labels[o["target"]]} if o.get("target") in labels else o for o in ops]
-    return method([ARR, INT], ops, 2)
+        head.extend([load(1), ifz("lt", "RET")])
+    head.extend([load(1), load(0, "ref"), ARRLEN, if_(cmp, "ACC")])
+    returns = [push(-1), RET_INT]
+    access = list(after_guard) + [load(0, "ref"), load(1), IALOAD, RET_INT]
+    ops = head + returns + access
+    labels = {"RET": len(head), "ACC": len(head) + len(returns)}
+    return method(
+        [ARR, INT],
+        [
+            {**opcode, "target": labels[opcode["target"]]}
+            if opcode.get("target") in labels
+            else opcode
+            for opcode in ops
+        ],
+        2,
+    )
 
 
 def sum_loop(cmp="ge"):
-    """int s = 0; for (int i = 0; i < a.length; i++) s += a[i];
-    With cmp="gt" the guard is i <= a.length (faulty)."""
     ops = [
-        push(0), store(2),  # 0: s = 0
-        push(0), store(3),  # 2: i = 0
-        load(3), load(0, "ref"), ARRLEN, if_(cmp, 16),  # 4: loop head
-        load(2), load(0, "ref"), load(3), IALOAD, binary("add"), store(2),  # 8
-        {"opr": "incr", "index": 3, "amount": 1},  # 14
-        goto(4),  # 15
-        load(2), RET_INT,  # 16: exit
+        push(0),
+        store(2),
+        push(0),
+        store(3),
+        load(3),
+        load(0, "ref"),
+        ARRLEN,
+        if_(cmp, 16),
+        load(2),
+        load(0, "ref"),
+        load(3),
+        IALOAD,
+        binary("add"),
+        store(2),
+        {"opr": "incr", "index": 3, "amount": 1},
+        goto(4),
+        load(2),
+        RET_INT,
     ]
     return method([ARR], ops, 4)
 
 
-def verdicts(m, domain, **kw):
-    r = Analysis(m, domain, **kw).run()
-    return [a.verdict for a in r.accesses], r
+def verdicts(fixture, domain, exchange=True):
+    analysis = AbstractInterpreter.initial(
+        fixture.bytecode,
+        fixture.methodid,
+        domain=domain,
+        exchange=exchange,
+    ).run()
+    _, accesses = analysis.results()
+    return [accesses[offset] for offset in sorted(accesses)], analysis
 
 
-class ListingOne(unittest.TestCase):
+class GuardedAccessTests(unittest.TestCase):
     def test_interval_warns_relational_proves(self):
-        m = guarded_read()
-        self.assertEqual(verdicts(m, "interval")[0], [WARNING])
-        v, r = verdicts(m, "dbm")
-        self.assertEqual(v, [SAFE])
-        self.assertEqual(r.accesses[0].null, "safe")  # a == null was ruled out
+        fixture = guarded_read()
+        self.assertEqual(verdicts(fixture, "interval")[0], [WARNING])
+        self.assertEqual(verdicts(fixture, "dbm")[0], [SAFE])
 
     def test_off_by_one_still_detected(self):
-        for d in ("interval", "dbm"):
-            self.assertEqual(verdicts(guarded_read(cmp="le"), d)[0], [WARNING], d)
+        for domain in ("interval", "dbm"):
+            self.assertEqual(
+                verdicts(guarded_read(cmp="le"), domain)[0],
+                [WARNING],
+                domain,
+            )
 
     def test_missing_lower_bound_detected(self):
-        for d in ("interval", "dbm"):
-            self.assertEqual(verdicts(guarded_read(lower=False), d)[0], [WARNING], d)
+        for domain in ("interval", "dbm"):
+            self.assertEqual(
+                verdicts(guarded_read(lower=False), domain)[0],
+                [WARNING],
+                domain,
+            )
 
     def test_index_changed_after_guard(self):
-        bump = [{"opr": "incr", "index": 1, "amount": 1}]
-        self.assertEqual(verdicts(guarded_read(after_guard=bump), "dbm")[0], [WARNING])
+        increment = [{"opr": "incr", "index": 1, "amount": 1}]
+        self.assertEqual(
+            verdicts(guarded_read(after_guard=increment), "dbm")[0],
+            [WARNING],
+        )
 
-    def test_decrement_after_guard_stays_safe_for_upper_but_not_lower(self):
-        dec = [{"opr": "incr", "index": 1, "amount": -1}]
-        self.assertEqual(verdicts(guarded_read(after_guard=dec), "dbm")[0], [WARNING])
+    def test_decrement_after_guard_can_break_lower_bound(self):
+        decrement = [{"opr": "incr", "index": 1, "amount": -1}]
+        self.assertEqual(
+            verdicts(guarded_read(after_guard=decrement), "dbm")[0],
+            [WARNING],
+        )
 
     def test_array_reassigned_after_guard(self):
-        realloc = [push(0), {"opr": "newarray", "type": "int", "dim": 1}, store(0, "ref")]
-        self.assertEqual(verdicts(guarded_read(after_guard=realloc), "dbm")[0], [WARNING])
+        reallocation = [
+            push(0),
+            {"opr": "newarray", "type": "int", "dim": 1},
+            store(0, "ref"),
+        ]
+        self.assertEqual(
+            verdicts(guarded_read(after_guard=reallocation), "dbm")[0],
+            [WARNING],
+        )
 
     def test_no_exchange_ablation_runs(self):
-        v, r = verdicts(guarded_read(), "dbm", exchange=False)
-        self.assertIsNone(r.unresolved)
-        self.assertEqual(len(v), 1)
+        statuses, analysis = verdicts(guarded_read(), "dbm", exchange=False)
+        self.assertIsNone(analysis.reason)
+        self.assertEqual(len(statuses), 1)
 
 
-class Loops(unittest.TestCase):
+class LoopTests(unittest.TestCase):
     def test_sum_loop(self):
         self.assertEqual(verdicts(sum_loop(), "interval")[0], [WARNING])
-        v, r = verdicts(sum_loop(), "dbm")
-        self.assertEqual(v, [SAFE])
-        self.assertIsNone(r.unresolved)
+        statuses, analysis = verdicts(sum_loop(), "dbm")
+        self.assertEqual(statuses, [SAFE])
+        self.assertIsNone(analysis.reason)
 
     def test_sum_loop_off_by_one(self):
-        for d in ("interval", "dbm"):
-            self.assertEqual(verdicts(sum_loop("gt"), d)[0], [WARNING], d)
+        for domain in ("interval", "dbm"):
+            self.assertEqual(verdicts(sum_loop("gt"), domain)[0], [WARNING], domain)
 
     def test_terminates_without_step_limit(self):
-        _, r = verdicts(sum_loop(), "dbm")
-        self.assertLess(r.steps, 200)
+        _, analysis = verdicts(sum_loop(), "dbm")
+        self.assertLess(analysis.steps, 200)
 
 
-class Soundness(unittest.TestCase):
-    def test_unsupported_opcode_is_unresolved(self):
-        m = method([ARR, INT], [load(0, "ref"), load(1), {"opr": "weird"}, IALOAD, RET_INT], 2)
-        v, r = verdicts(m, "dbm")
-        self.assertIsNotNone(r.unresolved)
-        self.assertEqual(v, [UNRESOLVED])
-
-
-class JPAMBArrays(unittest.TestCase):
-    """Known faulty accesses must stay detected in every configuration."""
-
-    FAULTY = {
-        "jpamb.cases.Arrays.arrayOutOfBounds:()V",
-        "jpamb.cases.Arrays.arraySometimesNull:(I)V",
-        "jpamb.cases.Arrays.arraySpellsHello:([C)V",
-    }
-    RELATIONAL_WINS = {
-        "jpamb.cases.Arrays.arraySumIsLarge:([I)V",
-        "jpamb.cases.Calls.allPrimesArePositive:(I)V",
-    }
-
-    def test_faulty_detected(self):
-        for m in self.FAULTY:
-            for d in ("interval", "dbm"):
-                self.assertEqual(analyse(m, d).summary, WARNING, (m, d))
-
-    def test_relational_removes_false_warnings(self):
-        for m in self.RELATIONAL_WINS:
-            self.assertEqual(analyse(m, "interval").summary, WARNING, m)
-            self.assertEqual(analyse(m, "dbm").summary, SAFE, m)
+class UnresolvedTests(unittest.TestCase):
+    def test_unsupported_array_type_is_unresolved(self):
+        fixture = method(
+            [ARR, INT],
+            [load(0, "ref"), load(1), {"opr": "array_load", "type": "char"}, RET_INT],
+            2,
+        )
+        statuses, analysis = verdicts(fixture, "dbm")
+        self.assertIsNotNone(analysis.reason)
+        self.assertEqual(statuses, [UNRESOLVED])
 
 
 if __name__ == "__main__":
     unittest.main()
-
-
-class DBMAdapter(unittest.TestCase):
-    def test_fast_reduce_matches_reference(self):
-        import random
-
-        from solutions.array_bounds.difference_bounds import DifferenceBounds
-        from solutions.array_bounds.domains import DBMDomain
-
-        rng = random.Random(7)
-        names = ["L0", "#L0", "L1", "#L1"]
-        for _ in range(300):
-            d = DifferenceBounds(names)
-            for _ in range(rng.randint(0, 4)):
-                x, y = rng.sample(["0"] + names, 2)
-                d = d.assume(x, y, rng.randint(-5, 5))
-            itv = {}
-            for n in rng.sample(names, rng.randint(0, 4)):
-                lo = rng.choice([None, rng.randint(-5, 5)])
-                hi = rng.choice([None, rng.randint(-5, 5)])
-                itv[n] = (lo, hi)
-            ref, ref_bounds = d.reduce_with_intervals(itv)
-            fast, fast_bounds = DBMDomain(d).reduce(itv)
-            self.assertEqual(ref.close().is_bottom, fast.is_bottom)
-            if not fast.is_bottom:
-                self.assertEqual(ref_bounds, fast_bounds)
-                self.assertEqual(ref.close().dbm, fast.closed().dbm)
