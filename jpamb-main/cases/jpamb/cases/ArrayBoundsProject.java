@@ -6,28 +6,76 @@ import jpamb.utils.*;
 
 public class ArrayBoundsProject {
 
-  // Pair 1: Complete bounds check vs missing upper bound
+  /*
+  * Each safe/unsafe pair isolates a different question:
+  *
+  * 1. Array aliasing:
+  *    Can a bounds check on one array be used for an alias of that array,
+  *    and is that relation invalidated when the alias is reassigned?
+  *
+  * 2. Off-by-one bounds:
+  *    Can the analysis distinguish i < array.length from
+  *    i <= array.length?
+  *
+  * 3. Difference relations:
+  *    Can the analysis use a fixed relation between two indices,
+  *    such as j - i = 2, to prove an array access safe?
+  *
+  * 4. Array reassignment:
+  *    Does a relation between an index and array.length become invalid
+  *    when the array is replaced with a different-sized array?
+  *
+  * 5. Derived indices:
+  *    Can the analysis propagate bounds through relations such as
+  *    j = i + 1?
+  *
+  * 6. Relations between array lengths:
+  *    Can the analysis reason about the lengths of two arrays, and
+  *    invalidate that relation when one array is reassigned?
+  *
+  * 7. Copied array lengths:
+  *    Can the analysis relate a variable containing array.length back
+  *    to the array, and detect when that copied length becomes stale?
+  *
+  * 8. Control-flow joins:
+  *    Can the analysis merge information from multiple branches while
+  *    keeping only relations that are valid on every incoming path?
+  *
+  * 9. Nested refinement:
+  *    Can relational facts learned in an outer branch be combined with
+  *    facts learned in an inner branch to prove an access safe?
+  *
+  * 10. Index equality:
+  *     Can bounds information be transferred between equal index variables,
+  *     and is that equality invalidated when one variable changes?
+  *
+  */
 
-  @Case("(1) -> ok")
+  // Pair 1: Array alias relation vs broken alias relation
+
+  @Case("(2) -> ok")
   @Tag({ARRAY})
-  public static int guardedAccess(int i) {
-    int[] array = {10, 20, 30};
+  public static int safeArrayAlias(int i) {
+    int[] a = {10, 20, 30, 40};
+    int[] b = a;
 
-    if (i >= 0 && i < array.length) {
-      return array[i];
+    if (i >= 0 && i < a.length) {
+      return b[i];
     }
 
     return 0;
   }
 
   @Case("(1) -> ok")
-  @Case("(3) -> out of bounds")
+  @Case("(2) -> out of bounds")
   @Tag({ARRAY})
-  public static int missingUpperBound(int i) {
-    int[] array = {10, 20, 30};
+  public static int unsafeArrayAlias(int i) {
+    int[] a = {10, 20, 30, 40};
+    int[] b = a;
 
-    if (i >= 0) {
-      return array[i];
+    if (i >= 0 && i < a.length) {
+      b = new int[2];
+      return b[i];
     }
 
     return 0;
@@ -60,27 +108,28 @@ public class ArrayBoundsProject {
     return 0;
   }
 
-  // Pair 3: Strict lower bound vs missing lower bound
+// Pair 3: Fixed difference between two indices
 
-  @Case("(0) -> ok")
+  @Case("(1, 3) -> ok")
+  @Case("(2, 4) -> ok")
   @Tag({ARRAY})
-  public static int strictLowerBound(int i) {
-    int[] array = {10, 20, 30};
+  public static int safeIndexDifference(int i, int j) {
+    int[] array = {10, 20, 30, 40, 50};
 
-    if (i >= 0 && i < array.length) {
+    if (j >= 2 && j < array.length && j - i == 2) {
       return array[i];
     }
 
     return 0;
   }
 
-  @Case("(0) -> ok")
-  @Case("(-1) -> out of bounds")
+  @Case("(1, 3) -> ok")
+  @Case("(-1, 1) -> out of bounds")
   @Tag({ARRAY})
-  public static int missingLowerBound(int i) {
-    int[] array = {10, 20, 30};
+  public static int unsafeIndexDifference(int i, int j) {
+    int[] array = {10, 20, 30, 40, 50};
 
-    if (i < array.length) {
+    if (j >= 0 && j < array.length && j - i == 2) {
       return array[i];
     }
 
@@ -262,85 +311,68 @@ public class ArrayBoundsProject {
 
     return array[i];
   }
+  // Pair 9: Relational information refined through nested guards
 
-  // Pair 9: Complementary indices derived from array length
-
-  @Case("(1, 3) -> ok")
-  @Case("(4, 0) -> ok")
+  @Case("(1, 2) -> ok")
+  @Case("(2, 3) -> ok")
   @Tag({ARRAY})
-  public static int safeComplementaryIndices(int x, int y) {
-    int[] array = {10, 20, 30, 40, 50};
+  public static int safeNestedRefinement(int i, int j) {
+    int[] array = {10, 20, 30, 40};
 
-    if (x >= 0 && y >= 0 && x + y == array.length - 1) {
-      return array[x] + array[y];
+    if (i >= 0 && i < array.length - 1) {
+      if (j == i + 1) {
+        return array[j];
+      }
     }
 
     return 0;
   }
 
-  @Case("(1, 4) -> ok")
-  @Case("(5, 0) -> out of bounds")
+  @Case("(1, 2) -> ok")
+  @Case("(3, 4) -> out of bounds")
   @Tag({ARRAY})
-  public static int unsafeComplementaryIndices(int x, int y) {
-    int[] array = {10, 20, 30, 40, 50};
+  public static int unsafeNestedRefinement(int i, int j) {
+    int[] array = {10, 20, 30, 40};
 
-    if (x >= 0 && y >= 0 && x + y == array.length) {
-      return array[x] + array[y];
+    if (i >= 0 && i < array.length) {
+      if (j == i + 1) {
+        return array[j];
+      }
     }
 
     return 0;
   }
 
-  // Pair 10: Safe progress invariant vs unsafe progress invariant
-
-  @Case("() -> ok")
-  @Tag({ARRAY, LOOP})
-  public static int safeProgressInvariant() {
-    int[] array = {10, 20, 30, 40, 50};
-
-    int remaining = array.length;
-    int completed = 0;
-    int sum = 0;
-
-    while (remaining > 0) {
-      sum += array[completed];
-      remaining--;
-      completed++;
-    }
-
-    return sum;
-  }
-  // Pair 11: Alias relation between two indices
+  // Pair 10: Alias relation between two indices
 
   @Case("(1) -> ok")
   @Case("(3) -> ok")
   @Tag({ARRAY})
   public static int safeAliasGuard(int i) {
-      int[] array = {10, 20, 30, 40};
-      int j = i;
+    int[] array = {10, 20, 30, 40};
+    int j = i;
 
-      if (j >= 0 && j < array.length) {
-          return array[i];
-      }
-
-      return 0;
-  }
-
-  @Case("() -> out of bounds")
-  @Tag({ARRAY, LOOP})
-  public static int unsafeProgressInvariant() {
-    int[] array = {10, 20, 30, 40, 50};
-
-    int remaining = array.length;
-    int completed = 0;
-    int sum = 0;
-
-    while (remaining >= 0) {
-      sum += array[completed];
-      remaining--;
-      completed++;
+    if (j >= 0 && j < array.length) {
+        return array[i];
     }
 
-    return sum;
+    return 0;
   }
+
+  @Case("(1) -> ok")
+  @Case("(4) -> out of bounds")
+  @Tag({ARRAY})
+  public static int unsafeAliasGuard(int i) {
+    int[] array = {10, 20, 30, 40};
+
+    int j = i;
+    j = j - 1;
+
+    if (j >= 0 && j < array.length) {
+      return array[i];
+    }
+
+    return 0;
+  }
+
 }
