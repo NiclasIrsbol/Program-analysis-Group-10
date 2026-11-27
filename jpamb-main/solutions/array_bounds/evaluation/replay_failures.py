@@ -158,6 +158,7 @@ def validate_evaluation_inventory(array_methods, manifest, labels_path=SRC / "la
 def replay(methodid, inputs):
     command = [
         "java",
+        "-ea",
         "-cp",
         str(CLASSES),
         "jpamb.Runtime",

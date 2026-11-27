@@ -11,6 +11,6 @@ jpamb.cases.ArrayBoundsProject.unsafeNestedRefinement:(II)I,"(3, 4)",out of boun
 jpamb.cases.ArrayBoundsProject.unsafeAliasGuard:(I)I,(4),out of bounds,out of bounds,yes
 jpamb.cases.Arrays.arrayOutOfBounds:()V,(),out of bounds,out of bounds,yes
 jpamb.cases.Arrays.arraySometimesNull:(I)V,(0),out of bounds,out of bounds,yes
-jpamb.cases.Arrays.arraySpellsHello:([C)V,([C: ]),out of bounds,ok,no
+jpamb.cases.Arrays.arraySpellsHello:([C)V,([C: ]),out of bounds,out of bounds,yes
 jpamb.cases.Calls.allPrimesArePositive:(I)V,(0),out of bounds,out of bounds,yes
 jpamb.cases.Calls.generatePrimeArray:(I)[I,(0),out of bounds,out of bounds,yes

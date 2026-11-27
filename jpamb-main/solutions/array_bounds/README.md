@@ -78,6 +78,9 @@ Replay the concrete `@Case` inputs that expect out-of-bounds results:
 uv run --project solutions\array_bounds --no-sync python solutions\array_bounds\evaluation\replay_failures.py
 ```
 
+The JVM runs with assertions enabled, so array accesses inside Java `assert`
+expressions are actually evaluated during replay.
+
 The script checks that array-tagged case methods are represented in both
 `src\labels.csv` and `src\evaluation_manifest.csv`, and that every faulty
 manifest method has a concrete replay input. It writes

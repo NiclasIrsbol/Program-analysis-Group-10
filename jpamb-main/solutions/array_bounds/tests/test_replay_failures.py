@@ -1,10 +1,13 @@
 import tempfile
 import unittest
 from pathlib import Path
+from subprocess import CompletedProcess
+from unittest.mock import patch
 
 from solutions.array_bounds.evaluation.replay_failures import (
     discover_array_methods,
     discover_faulty_cases,
+    replay,
     read_manifest,
     validate_evaluation_inventory,
 )
@@ -39,6 +42,21 @@ class ArrayCases {
             discover_faulty_cases(methods, supplemental_cases={}),
             [(methodid, "(0, [I: ])")],
         )
+
+    @patch("solutions.array_bounds.evaluation.replay_failures.subprocess.run")
+    def test_replay_enables_assertions(self, run_process):
+        run_process.return_value = CompletedProcess(
+            args=[],
+            returncode=0,
+            stdout="out of bounds\n",
+            stderr="",
+        )
+
+        outcome = replay("example.Arrays.arraySpellsHello:([C)V", "([C: ])")
+
+        self.assertEqual(outcome, "out of bounds")
+        command = run_process.call_args.args[0]
+        self.assertIn("-ea", command)
 
     def test_checked_in_array_inventory_is_complete_and_replayable(self):
         validate_evaluation_inventory(
