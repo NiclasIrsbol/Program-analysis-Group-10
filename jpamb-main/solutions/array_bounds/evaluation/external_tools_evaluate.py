@@ -346,7 +346,7 @@ def main(argv=None):
             for row in jbmc_rows
         )
         metric_rows = [row for row in jbmc_rows if row["label"] in ("safe", "faulty")]
-        runtime_s = statistics.median(
+        runtime_s = sum(
             float(row["runtime_s"]) for row in metric_rows
         )
         jbmc_summary = {

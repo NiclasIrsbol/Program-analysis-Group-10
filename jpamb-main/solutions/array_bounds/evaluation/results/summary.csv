@@ -1,4 +1,6 @@
 config,methods,accesses,safe_labelled,false_warnings,false_warning_rate,faulty_labelled,detected,detection_rate,null_labelled,unresolved,unlabelled,runtime_median_s,runtime_iqr_s,steps,abstract_states,rel_state_size
-interval,31,103,41,4,0.098,3,3,1.000,1,1,0,0.119618,0.019723,1383,913,0
-dbm,31,103,41,1,0.024,3,3,1.000,1,1,0,24.775521,11.882832,1555,913,40720
-dbm-noexchange,31,103,41,1,0.024,3,3,1.000,1,1,0,3.814912,0.861758,1663,913,34758
+interval,31,103,89,9,0.101,13,13,1.000,1,1,0,0.109313,0.012577,1383,913,0
+guard-facts,31,103,89,5,0.056,13,13,1.000,1,1,0,0.581732,0.036176,1445,913,13509
+guard-facts-noexchange,31,103,89,8,0.090,13,13,1.000,1,1,0,0.227310,0.018263,1443,913,12678
+dbm,31,103,89,3,0.034,13,13,1.000,1,1,0,17.091098,0.321584,1555,913,40720
+dbm-noexchange,31,103,89,3,0.034,13,13,1.000,1,1,0,2.632448,0.060586,1663,913,34758

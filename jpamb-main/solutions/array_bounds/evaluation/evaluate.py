@@ -24,6 +24,8 @@ from interpreter import AbstractInterpreter  # noqa: E402
 ARRAY_OPS = {"array_load", "array_store", "array-load", "array-store"}
 CONFIGURATIONS = (
     ("interval", "interval", True),
+    ("guard-facts", "guard-facts", True),
+    ("guard-facts-noexchange", "guard-facts", False),
     ("dbm", "dbm", True),
     ("dbm-noexchange", "dbm", False),
 )
@@ -102,8 +104,8 @@ def labels_for_accesses(bytecode, methodid, accesses, labels):
         decoded = jvm.AbsMethodID.decode(methodid)
         raw_method = bytecode.suite.findmethod(decoded, eff=bytecode.eff)
         opcodes = {
-            instruction["offset"]: jvm.Opcode.from_json(instruction)
-            for instruction in raw_method["code"]["bytecode"]
+            position: jvm.Opcode.from_json(instruction)
+            for position, instruction in enumerate(raw_method["code"]["bytecode"])
         }
 
     resolved = {}
@@ -203,12 +205,17 @@ def main(argv=None):
             abstract_states += len(analysis.states)
             steps += analysis.steps
             for state in analysis.states.values():
-                if state.bounds is not None and hasattr(state.bounds, "dbm"):
+                if state.bounds is None:
+                    continue
+
+                if hasattr(state.bounds, "dbm"):
                     rel_state_size += sum(
                         isfinite(bound)
                         for row in state.bounds.dbm
                         for bound in row
                     )
+                elif hasattr(state.bounds, "facts"):
+                    rel_state_size += len(state.bounds.facts)
 
             for offset, verdict in sorted(accesses.items()):
                 label = access_labels.get(offset, "")

@@ -1,31 +1,32 @@
-.jdtls
-.metadata
+.jdtls/
+.metadata/
 .classpath
 .project
-.settings
-__pycache__
-target/
+.settings/
 
-result.json
-.venv
+__pycache__/
+*.py[cod]
+
+target/
+build/
+dist/
+*.egg-info/
+
+.venv/
 
 reports/
 
-*.egg-info/
-dist/
-*.pyd
-*.so
+tools/checker-framework/
 
-build/
+result.json
+result
+report.sexp
 
 .jpamb-stepwise
-.hypothesis
+.hypothesis/
 leananalyzer
 
-result
 .config/ash.json
-
-report.sexp
 
 tags
 

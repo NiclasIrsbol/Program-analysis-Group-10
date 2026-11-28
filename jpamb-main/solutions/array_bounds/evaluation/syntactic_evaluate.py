@@ -107,7 +107,6 @@ def main(argv=None):
                     f"{methodid}: syntactic found {len(syntactic)} accesses, "
                     f"but only {len(dbm_accesses)} accesses are labelled"
                 )
-            # Array-initialiser stores have no corresponding source access.
             syntactic = ["SAFE"] * (len(dbm_accesses) - len(syntactic)) + syntactic
 
         for ordinal, ((offset, verdict), syntactic_verdict) in enumerate(
@@ -141,9 +140,28 @@ def main(argv=None):
         verdict_field = f"{config}_verdict"
         safe = [row for row in rows if row["label"] == "safe"]
         faulty = [row for row in rows if row["label"] == "faulty"]
-        false_warnings = sum(row[verdict_field] != "SAFE" for row in safe)
-        detected = sum(row[verdict_field] != "SAFE" for row in faulty)
+
+        if config == "syntactic":
+            false_warnings = sum(
+                row[verdict_field] != "SAFE"
+                for row in safe
+            )
+            detected = sum(
+                row[verdict_field] != "SAFE"
+                for row in faulty
+            )
+        else:
+            false_warnings = sum(
+                row[verdict_field] == "WARNING"
+                for row in safe
+            )
+            detected = sum(
+                row[verdict_field] == "WARNING"
+                for row in faulty
+            )
+
         runtime = runtimes[config]
+
         summary.append(
             {
                 "config": config,
@@ -156,9 +174,12 @@ def main(argv=None):
                 ),
                 "faulty_labelled": len(faulty),
                 "detected": detected,
-                "detection_rate": f"{detected / len(faulty):.3f}" if faulty else "",
+                "detection_rate": (
+                    f"{detected / len(faulty):.3f}" if faulty else ""
+                ),
                 "unknown_or_unresolved": sum(
-                    row[verdict_field] in ("UNKNOWN", "UNRESOLVED") for row in rows
+                    row[verdict_field] in ("UNKNOWN", "UNRESOLVED")
+                    for row in rows
                 ),
                 "runtime_median_s": f"{statistics.median(runtime):.6f}",
             }
